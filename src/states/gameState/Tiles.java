@@ -13,7 +13,6 @@ public class Tiles {
     private Rectangle bounds;
     private Handler handler;
     public int[] cords = new int[0];
-    private int randomImageValue = 0;
     Random rand = new Random();
     public Image tileType;
 
@@ -21,8 +20,7 @@ public class Tiles {
         this.bounds = bounds;
         this.handler = handler;
         this.cords = startingCords;
-        randomImageValue = rand.nextInt(4);
-        tileType = Assets.VOID[randomImageValue];
+        tileType = Assets.WATER;
     }
 
     public Tiles(Rectangle bounds, Handler handler) {
@@ -30,7 +28,6 @@ public class Tiles {
         this.bounds = bounds;
         this.handler = handler;
         cords = new int[]{bounds.x,bounds.y};
-        tileType = Assets.VOID[randomImageValue];
     }
 
     public void tick() {

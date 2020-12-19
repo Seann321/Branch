@@ -10,7 +10,7 @@ public class Player {
 
     private Handler handler;
     public Rectangle bounds;
-    private int speed = 10;
+    private int speed = 4;
 
     public Player(Handler handler, Rectangle bounds) {
         this.bounds = bounds;

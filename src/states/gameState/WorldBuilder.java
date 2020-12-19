@@ -19,7 +19,7 @@ public class WorldBuilder {
         for(int i = 0; i < 4; i++){
             selectionUI.add(new Tiles((new Rectangle(Branch.WIDTH/100, (int)(i * GameState.TileSize * 1.2) + GameState.TileSize/10,GameState.TileSize,GameState.TileSize)), handler));
         }
-        selectionUI.get(0).tileType = Assets.VOID[1];
+        selectionUI.get(0).tileType = Assets.VOID;
         selectionUI.get(1).tileType = Assets.WATER;
         selectionUI.get(2).tileType = Assets.LIFE;
         selectionUI.get(3).tileType = Assets.GRASS;

@@ -9,8 +9,6 @@ import states.gameState.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class GameState extends States {
@@ -18,7 +16,9 @@ public class GameState extends States {
     //GUITextStuff
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
 
-    public static Map<String, Tiles> TilesMap = new HashMap<>();
+    public static ArrayList<Life> Life = new ArrayList<>();
+    public static ArrayList<Life> NewLife = new ArrayList<>();
+    public static ArrayList<Tiles> TilesMap = new ArrayList<>();
     Random rand = new Random();
     public static int TileSize = 120;
     public static int TileWidth = (Branch.WIDTH / TileSize);
@@ -42,40 +42,62 @@ public class GameState extends States {
     void createTiles() {
         for (int i = 0; i < TileWidth + 10; i++) {
             for (int ii = 0; ii < TileHeight + 10; ii++) {
-                String key = "X" + i + "Y" + ii;
-                TilesMap.put(key, new Tiles(new Rectangle(i * TileSize, ii * TileSize, TileSize, TileSize), new int[]{i, ii}, handler));
+                TilesMap.add(new Tiles(new Rectangle(i * TileSize, ii * TileSize, TileSize, TileSize), new int[]{i, ii}, handler));
             }
         }
     }
 
+    public static Tiles getTileAtCords(int[] cords) {
+        for (Tiles t : TilesMap) {
+            if (t.getBounds().contains(cords[0], cords[1])) {
+                return t;
+            }
+        }
+        return TilesMap.get(0);
+    }
+
     @Override
     public void tick() {
-        if(handler.getMM().isLeftPressed()){
-            for(Tiles t : TilesMap.values()){
-                if(t.getBounds().contains(handler.getMM().getMouseX(),handler.getMM().getMouseY())){
-                    for(Tiles tt : worldBuilder.getSelectionUI()){
-                        if(tt.getBounds().contains(handler.getMM().getMouseX(),handler.getMM().getMouseY())){
-                            return;
+        Life.clear();
+        Life.addAll(NewLife);
+        if (handler.getMM().isLeftPressed()) {
+            if (worldBuilder.selectedTile.tileType == Assets.LIFE) {
+                NewLife.add(new Life(handler, new Rectangle(handler.getMM().getMouseX() - Camera.getX(), handler.getMM().getMouseY() - Camera.getY(), 12, 20)));
+            } else {
+
+                for (Tiles t : TilesMap) {
+                    if (t.getBounds().contains(handler.getMM().getMouseX(), handler.getMM().getMouseY())) {
+                        for (Tiles tt : worldBuilder.getSelectionUI()) {
+                            if (tt.getBounds().contains(handler.getMM().getMouseX(), handler.getMM().getMouseY())) {
+                                return;
+                            }
                         }
+                        t.tileType = worldBuilder.selectedTile.tileType;
                     }
-                    t.tileType = worldBuilder.selectedTile.tileType;
                 }
             }
         }
-        if(handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE)){
-            handler.switchToMenuState();;
+        if (handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE)) {
+            handler.switchToMenuState();
         }
         gui.tick();
         worldBuilder.tick();
         Player.tick();
         Camera.tick();
-        for (Tiles t : TilesMap.values()) {
+        for (Tiles t : TilesMap) {
             t.tick();
+        }
+        for (Life l : Life) {
+            l.tick();
+            if(!l.active){
+                NewLife.remove(l);
+            }
         }
     }
 
-    public Color randomColor() {
-        return new Color(rand.nextInt(254), rand.nextInt(254), rand.nextInt(254));
+    public static Color randomColor() {
+        Random randomColor = new Random();
+        return new Color(randomColor.nextInt(254), randomColor.nextInt(254), randomColor.nextInt(254));
     }
 
     public String randomCords() {
@@ -87,11 +109,14 @@ public class GameState extends States {
 
     @Override
     public void render(Graphics g) {
-        for (Tiles t : TilesMap.values()) {
+        for (Tiles t : TilesMap) {
             t.render(g);
         }
         gui.render(g);
         Player.render(g);
+        for (Life l : Life) {
+            l.render(g);
+        }
         worldBuilder.render(g);
     }
 }

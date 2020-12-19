@@ -43,7 +43,7 @@ public class MenuState extends States {
 
     @Override
     public void render(Graphics g) {
-        for (Tiles t : GameState.TilesMap.values()) {
+        for (Tiles t : GameState.TilesMap) {
             t.render(g);
         }
         gui.render(g);
