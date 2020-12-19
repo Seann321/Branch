@@ -23,8 +23,9 @@ public class GameState extends States {
     public static int TileSize = 120;
     public static int TileWidth = (Branch.WIDTH / TileSize);
     public static int TileHeight = (Branch.HEIGHT / TileSize);
-    public static Player Player;
+    private static Player Player;
     public static Camera Camera;
+    private static WorldBuilder worldBuilder;
 
     public GameState(Handler handler) {
         super(handler);
@@ -35,7 +36,7 @@ public class GameState extends States {
         createTiles();
         Player = new Player(handler, new Rectangle(TileWidth / 2 * TileSize, TileHeight / 2 * TileSize, (int) (TileSize * .6), (int) (TileSize * .6)));
         Camera = new Camera(Player);
-        Tiles tempPlayerTile = null;
+        worldBuilder = new WorldBuilder(handler);
     }
 
     void createTiles() {
@@ -49,28 +50,28 @@ public class GameState extends States {
 
     @Override
     public void tick() {
+        if(handler.getMM().isLeftPressed()){
+            for(Tiles t : TilesMap.values()){
+                if(t.getBounds().contains(handler.getMM().getMouseX(),handler.getMM().getMouseY())){
+                    for(Tiles tt : worldBuilder.getSelectionUI()){
+                        if(tt.getBounds().contains(handler.getMM().getMouseX(),handler.getMM().getMouseY())){
+                            return;
+                        }
+                    }
+                    t.tileType = worldBuilder.selectedTile.tileType;
+                }
+            }
+        }
         if(handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE)){
             handler.switchToMenuState();;
         }
         gui.tick();
+        worldBuilder.tick();
         Player.tick();
         Camera.tick();
         for (Tiles t : TilesMap.values()) {
             t.tick();
         }
-    }
-
-    public Tiles randomTile(Tiles.TileType a){
-        ArrayList<Tiles> randomTiles = new ArrayList<>();
-        for(Tiles t : TilesMap.values()){
-            if(t.tileType == a){
-                randomTiles.add(t);
-            }
-        }
-        if(randomTiles.size() != 0){
-            return randomTiles.get(rand.nextInt(randomTiles.size()));
-        }
-        return null;
     }
 
     public Color randomColor() {
@@ -91,5 +92,6 @@ public class GameState extends States {
         }
         gui.render(g);
         Player.render(g);
+        worldBuilder.render(g);
     }
 }
