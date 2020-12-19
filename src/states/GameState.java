@@ -17,7 +17,6 @@ public class GameState extends States {
 
     //GUITextStuff
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
-    UIObject grassPoints = new UIObject("Grass Points: ", 0, GUI.font50.getSize(), false, Color.green, Color.green, GUI.font50, guiStuff);
 
     public static Map<String, Tiles> TilesMap = new HashMap<>();
     Random rand = new Random();
@@ -26,12 +25,10 @@ public class GameState extends States {
     public static int TileHeight = (Branch.HEIGHT / TileSize);
     public static Player Player;
     public static Camera Camera;
-    private Shop shop;
 
     public GameState(Handler handler) {
         super(handler);
         gui = new GUI(handler);
-        shop = new Shop(handler,gui);
         for (UIObject x : guiStuff) {
             addText(gui, x);
         }
@@ -39,21 +36,6 @@ public class GameState extends States {
         Player = new Player(handler, new Rectangle(TileWidth / 2 * TileSize, TileHeight / 2 * TileSize, (int) (TileSize * .6), (int) (TileSize * .6)));
         Camera = new Camera(Player);
         Tiles tempPlayerTile = null;
-        for (Tiles t : TilesMap.values()) {
-            if (t.bounds.intersects(Player.bounds)) {
-                tempPlayerTile = t;
-            }
-        }
-        tempPlayerTile.changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0] + 1) + "Y" + (tempPlayerTile.cords[1])).changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0] - 1) + "Y" + (tempPlayerTile.cords[1])).changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0]) + "Y" + ((tempPlayerTile.cords[1]) + 1)).changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0]) + "Y" + ((tempPlayerTile.cords[1]) - 1)).changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0] - 1) + "Y" + ((tempPlayerTile.cords[1]) - 1)).changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0] + 1) + "Y" + ((tempPlayerTile.cords[1]) - 1)).changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0] - 1) + "Y" + ((tempPlayerTile.cords[1]) + 1)).changeImage(Assets.Grass);
-        TilesMap.get("X" + (tempPlayerTile.cords[0] + 1) + "Y" + ((tempPlayerTile.cords[1]) + 1)).changeImage(Assets.Grass);
-        //buildIsland();
     }
 
     void createTiles() {
@@ -76,24 +58,6 @@ public class GameState extends States {
         for (Tiles t : TilesMap.values()) {
             t.tick();
         }
-        spreadGrass();
-        updateGUI();
-        if (handler.getKM().left && handler.getKM().right) {
-            Player.GrassPoints++;
-        }
-        shop.tick();
-        if(!TutorialEnded){
-            return;
-        }
-        shopItems();
-    }
-
-    boolean shopMade = false;
-    public void shopItems(){
-        if(!shopMade && Player.GrassPoints >= 5){
-            randomTile(Tiles.TileType.GRASS).changeImage(Assets.Shop);
-            shopMade = true;
-        }
     }
 
     public Tiles randomTile(Tiles.TileType a){
@@ -107,79 +71,6 @@ public class GameState extends States {
             return randomTiles.get(rand.nextInt(randomTiles.size()));
         }
         return null;
-    }
-
-    public void updateGUI() {
-        grassPoints.setText("Grass Points: " + Player.GrassPoints);
-    }
-
-    public static boolean TutorialEnded = false;
-
-    public void buildIsland() {
-        for (Tiles t : TilesMap.values()) {
-            if (t.tileType == Tiles.TileType.WATER) {
-                if (validMove(Tiles.TileType.GRASS, t)) {
-                    t.changeImage(Assets.Sand);
-                }
-            }
-            if(t.tileType == Tiles.TileType.MARSH){
-                if (!validMove(Tiles.TileType.WATER, t)) {
-                    t.changeImage(Assets.Grass);
-                }
-            }
-        }
-    }
-
-    public void spreadGrass() {
-        if (TutorialEnded) {
-            if (Player.GrassPoints > 0) {
-                for (Tiles t : TilesMap.values()) {
-                    {
-                        if (t.bounds.contains(Player.bounds) && t.tileType == Tiles.TileType.SAND) {
-                            if (validMove(Tiles.TileType.GRASS, t) || validMove(Tiles.TileType.FLOWER,t) || validMove(Tiles.TileType.SHOP,t)) {
-                                t.changeImage(Tiles.getTileImage(Player.getInventory().selectedTile));
-                                Player.GrassPoints--;
-                                buildIsland();
-                            }
-                        }
-                    }
-                }
-                return;
-            }
-        }
-        if (Player.GrassPoints > 0)
-            for (Tiles t : TilesMap.values()) {
-                if (t.bounds.contains(Player.bounds) && t.tileType == Tiles.TileType.WATER) {
-                    if (validMove(Tiles.TileType.GRASS, t)) {
-                        t.changeImage(Assets.Grass);
-                        Player.GrassPoints--;
-                        if (Player.GrassPoints == 0 && !TutorialEnded) {
-                            TutorialEnded = true;
-                            buildIsland();
-                        }
-                    }
-                }
-            }
-    }
-
-    public boolean validMove(Tiles.TileType a, Tiles startTile) {
-        if (TilesMap.get("X" + (startTile.cords[0] + 1) + "Y" + (startTile.cords[1])) != null) {
-            if (TilesMap.get("X" + (startTile.cords[0] + 1) + "Y" + (startTile.cords[1])).tileType == a)
-                return true;
-        }
-        if (TilesMap.get("X" + (startTile.cords[0] - 1) + "Y" + (startTile.cords[1])) != null) {
-            if (TilesMap.get("X" + (startTile.cords[0] - 1) + "Y" + (startTile.cords[1])).tileType == a)
-                return true;
-        }
-        if (TilesMap.get("X" + (startTile.cords[0]) + "Y" + ((startTile.cords[1]) + 1)) != null) {
-            if (TilesMap.get("X" + (startTile.cords[0]) + "Y" + ((startTile.cords[1]) + 1)).tileType == a)
-                return true;
-        }
-        if (TilesMap.get("X" + (startTile.cords[0]) + "Y" + ((startTile.cords[1]) - 1)) != null) {
-            if (TilesMap.get("X" + (startTile.cords[0]) + "Y" + ((startTile.cords[1]) - 1)).tileType == a)
-                return true;
-        }
-        return false;
     }
 
     public Color randomColor() {
@@ -200,6 +91,5 @@ public class GameState extends States {
         }
         gui.render(g);
         Player.render(g);
-        shop.render(g);
     }
 }
