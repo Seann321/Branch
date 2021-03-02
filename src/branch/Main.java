@@ -4,10 +4,10 @@ import java.awt.*;
 
 public class Main {
 
-    public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public static Dimension ScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     public static void main(String[] args) {
-        Branch branch = new Branch("Branch", screenSize.width, screenSize.height);
+        Branch branch = new Branch("Branch", 1920, 1080);
         branch.start();
     }
 

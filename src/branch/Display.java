@@ -18,7 +18,7 @@ public class Display {
         this.width = width;
         this.height = height;
         createDisplay();
-        setBorderless(true);
+        //setBorderless(true);
     }
 
     private void createDisplay() {

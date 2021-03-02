@@ -28,7 +28,6 @@ public class Handler {
         currentState = x;
     }
 
-
     public GUI getCurrentGUI() {
         return GUI.currentGUI;
     }
@@ -37,14 +36,10 @@ public class Handler {
         mouseManager = new MouseManager(this);
     }
 
-    public void switchToGameState(){
-        GUI.currentGUI = Branch.GameState.gui;
-        currentState = Branch.GameState;
-    }
-
-    public void switchToMenuState(){
-        GUI.currentGUI = Branch.MenuState.gui;
-        currentState = Branch.MenuState;
+    public void switchToState(States state){
+        GUI.currentGUI = state.gui;
+        currentState = state;
+        state.reset();
     }
 
 }

@@ -15,48 +15,20 @@ public class UIObject {
     Font font = GUI.font;
     public String text;
     public Rectangle bounds;
-    protected boolean clicked = false, rightClicked = false;
+    public boolean clicked = false, rightClicked = false;
     public int x, xOffset = 0;
     public int y, yOffset = 0;
     public boolean center;
+    public boolean rightAlign;
     public boolean hovering = false;
     public Color color;
     public Color newColor;
     public Color original;
+    public Color oldColor,oldNewColor,oldOriginal;
     public boolean active = true;
     public Handler handler;
+    public int textWidth;
 
-    public UIObject(String text, int x, int y, boolean center, Color color) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.center = center;
-        this.color = color;
-        original = color;
-        bounds = new Rectangle(0, 0, 0, 0);
-    }
-
-    public UIObject(String text, int x, int y, boolean center, Color color, Color newColor) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.center = center;
-        this.color = color;
-        original = color;
-        this.newColor = newColor;
-        bounds = new Rectangle(0, 0, 0, 0);
-    }
-
-    public UIObject(String text, int x, int y, boolean center, Color color, Font font) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.center = center;
-        this.color = color;
-        original = color;
-        this.font = font;
-        bounds = new Rectangle(0, 0, 0, 0);
-    }
 
     public UIObject(String text, int x, int y, boolean center, Color color, Color newColor, Font font) {
         this.text = text;
@@ -70,18 +42,7 @@ public class UIObject {
         bounds = new Rectangle(0, 0, 0, 0);
     }
 
-    public UIObject(String text, int x, int y, boolean center, Color color, ArrayList<UIObject> list) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.center = center;
-        this.color = color;
-        original = color;
-        bounds = new Rectangle(0, 0, 0, 0);
-        list.add(this);
-    }
-
-    public UIObject(String text, int x, int y, boolean center, Color color, Color newColor, ArrayList<UIObject> list) {
+    public UIObject(String text, int x, int y, boolean center, Color color, Color newColor, Font font, ArrayList<UIObject> list) {
         this.text = text;
         this.x = x;
         this.y = y;
@@ -89,27 +50,17 @@ public class UIObject {
         this.color = color;
         original = color;
         this.newColor = newColor;
-        bounds = new Rectangle(0, 0, 0, 0);
-        list.add(this);
-    }
-
-    public UIObject(String text, int x, int y, boolean center, Color color, Font font, ArrayList<UIObject> list) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.center = center;
-        this.color = color;
-        original = color;
         this.font = font;
         bounds = new Rectangle(0, 0, 0, 0);
         list.add(this);
     }
 
-    public UIObject(String text, int x, int y, boolean center, Color color, Color newColor, Font font, ArrayList<UIObject> list) {
+    public UIObject(String text, int x, int y, boolean center, boolean rightAlign, Color color, Color newColor, Font font, ArrayList<UIObject> list) {
         this.text = text;
         this.x = x;
         this.y = y;
         this.center = center;
+        this.rightAlign = rightAlign;
         this.color = color;
         original = color;
         this.newColor = newColor;
@@ -186,6 +137,15 @@ public class UIObject {
             bounds = new Rectangle((int) x - xOffset, (int) y - ((int) fm.getHeight() - 5), (int) fm.stringWidth(text) + xOffset, (int) fm.getHeight() + yOffset);
         }
 
+        if(rightAlign){
+
+            x = xPos - fm.stringWidth(text);
+            y = (yPos - fm.getHeight()) + fm.getAscent();
+
+            bounds = new Rectangle((int) x - xOffset, (int) y - ((int) fm.getHeight() - 5), (int) fm.stringWidth(text) + xOffset, (int) fm.getHeight() + yOffset);
+
+        }
+
         if (!center) {
             bounds = new Rectangle((int) x - xOffset, (int) y - ((int) fm.getHeight() - 5), (int) fm.stringWidth(text) + xOffset, (int) fm.getHeight() + yOffset);
         }
@@ -226,10 +186,20 @@ public class UIObject {
     }
 
     public void setAllColors(Color x) {
+        oldColor = color;
+        oldNewColor = newColor;
+        oldOriginal = original;
         color = x;
         newColor = x;
         original = x;
     }
+
+    public void resetColors(){
+        color = oldColor;
+        newColor = oldNewColor;
+        original = oldOriginal;
+    }
+
 
     public String getText() {
         return text;

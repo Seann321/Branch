@@ -2,6 +2,7 @@ package controls;
 
 import states.Handler;
 
+import java.awt.*;
 import java.awt.event.*;
 
 public class MouseManager implements MouseListener, MouseMotionListener, MouseWheelListener{

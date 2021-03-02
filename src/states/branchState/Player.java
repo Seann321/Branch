@@ -1,7 +1,5 @@
-package states.gameState;
+package states.branchState;
 
-import gfx.image.Assets;
-import states.GameState;
 import states.Handler;
 
 import java.awt.*;

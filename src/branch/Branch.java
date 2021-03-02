@@ -2,12 +2,12 @@ package branch;
 
 import gfx.GUI;
 import gfx.image.Assets;
-import states.GameState;
-import states.Handler;
-import states.MenuState;
+import states.*;
+import states.dataState.EditCustomer;
+import states.menuState.OptionsScreen;
+import states.menuState.SelectorScreen;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -23,8 +23,13 @@ public class Branch implements Runnable {
     public static int WIDTH, HEIGHT;
     public String title;
     private boolean running = false;
-    public static GameState GameState;
+    public static BranchState BranchState;
     public static MenuState MenuState;
+    public static GrayState GrayState;
+    public static DataState DataState;
+    public static SelectorScreen SelectorScreen;
+    public static OptionsScreen OptionsScreen;
+    public static EditCustomer EditCustomer;
 
     public Branch(String title, int width, int height) {
         this.WIDTH = width;
@@ -33,9 +38,14 @@ public class Branch implements Runnable {
         handler = new Handler();
         GUI.init();
         Assets.Init();
-        GameState = new GameState(handler);
+        BranchState = new BranchState(handler);
         MenuState = new MenuState(handler);
-        handler.setCurrentState(MenuState);
+        GrayState = new GrayState(handler);
+        SelectorScreen = new SelectorScreen(handler);
+        OptionsScreen = new OptionsScreen(handler);
+        DataState = new DataState(handler);
+        EditCustomer = new EditCustomer(handler);
+        handler.switchToState(DataState);
     }
 
 

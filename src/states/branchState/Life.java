@@ -1,8 +1,7 @@
-package states.gameState;
+package states.branchState;
 
 import gfx.image.Assets;
-import org.w3c.dom.css.Rect;
-import states.GameState;
+import states.BranchState;
 import states.Handler;
 
 import java.awt.*;
@@ -16,7 +15,8 @@ public class Life {
     BufferedImage image = Assets.PERSON;
     Rectangle bounds;
     int health = 5;
-    int speed = 1;
+    int speed = 3;
+    int attack = 1;
     Random rand = new Random();
     boolean swim = false;
     public boolean active = true;
@@ -46,18 +46,19 @@ public class Life {
     }
 
     private void evolve(Life oldLife, Life newLife){
-        int change = rand.nextInt(3) - 1;
-        newLife.health += change + oldLife.health;
-        newLife.speed += change + oldLife.speed;
+        newLife.health += (rand.nextInt(3) - 1) + oldLife.health;
+        newLife.speed += (rand.nextInt(3) - 1) + oldLife.speed;
+        newLife.attack += (rand.nextInt(3) - 1) + oldLife.speed;
     }
 
     private void fight(){
-        for (Life l : GameState.Life) {
+        for (Life l : BranchState.Life) {
             if (l.getBounds().intersects(getBounds())) {
                 if(l.color.equals(color)){
                     return;
                 }else{
                     l.health -= rand.nextInt(2);
+                    l.health -= attack;
                     if(l.health <= 0){
                         l.active = false;
                     }
@@ -67,7 +68,7 @@ public class Life {
     }
 
     private void reproduce() {
-        for (Life l : GameState.Life) {
+        for (Life l : BranchState.Life) {
             if (l == this) {
                 continue;
             }
@@ -75,21 +76,23 @@ public class Life {
                 return;
             }
         }
-        if (GameState.getTileAtCords(getCords()).tileType == Assets.GRASS) {
+        if (BranchState.getTileAtCords(getCords()).tileType == Assets.GRASS) {
             if (rand.nextInt(100) == 1) {
-                Life tempLife = new Life(handler, new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height),GameState.randomColor());
+                Life tempLife = new Life(handler, new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height), BranchState.randomColor());
                 tempLife.swim = true;
                 tempLife.health += 10;
                 evolve(this,tempLife);
-                GameState.NewLife.add(tempLife);
+                BranchState.NewLife.add(tempLife);
             }else{
-                GameState.NewLife.add(new Life(handler, new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height),color));
+                Life tempLife = new Life(handler, new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height),color);
+                tempLife.evolve(this,tempLife);
+                BranchState.NewLife.add(tempLife);
             }
         }
     }
 
     private void tileCondition() {
-        Tiles tileUnder = GameState.getTileAtCords(getCords());
+        Tiles tileUnder = BranchState.getTileAtCords(getCords());
         if (tileUnder.tileType == Assets.WATER && !swim) {
             active = false;
         }
@@ -103,7 +106,7 @@ public class Life {
     }
 
     public void render(Graphics g) {
-        g.drawImage(image, bounds.x + GameState.Camera.getX(), bounds.y + GameState.Camera.getY(), bounds.width, bounds.height, null);
+        g.drawImage(image, bounds.x + BranchState.Camera.getX(), bounds.y + BranchState.Camera.getY(), bounds.width, bounds.height, null);
         int imageWidth = image.getWidth();
         int imageHeight = image.getHeight();
         g.setColor(color);
@@ -111,11 +114,11 @@ public class Life {
     }
 
     public int[] getCords() {
-        return new int[]{bounds.x + GameState.Camera.getX(), bounds.y + GameState.Camera.getY()};
+        return new int[]{bounds.x + BranchState.Camera.getX(), bounds.y + BranchState.Camera.getY()};
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(bounds.x + GameState.Camera.getX(), bounds.y + GameState.Camera.getY(), bounds.width, bounds.height);
+        return new Rectangle(bounds.x + BranchState.Camera.getX(), bounds.y + BranchState.Camera.getY(), bounds.width, bounds.height);
     }
 
 }

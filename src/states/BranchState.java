@@ -4,14 +4,14 @@ import branch.Branch;
 import gfx.GUI;
 import gfx.UIObject;
 import gfx.image.Assets;
-import states.gameState.*;
+import states.branchState.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GameState extends States {
+public class BranchState extends States {
 
     //GUITextStuff
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
@@ -27,7 +27,7 @@ public class GameState extends States {
     public static Camera Camera;
     private static WorldBuilder worldBuilder;
 
-    public GameState(Handler handler) {
+    public BranchState(Handler handler) {
         super(handler);
         gui = new GUI(handler);
         for (UIObject x : guiStuff) {
@@ -78,7 +78,7 @@ public class GameState extends States {
             }
         }
         if (handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE)) {
-            handler.switchToMenuState();
+            handler.switchToState(Branch.MenuState);
         }
         gui.tick();
         worldBuilder.tick();

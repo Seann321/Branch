@@ -21,6 +21,10 @@ public abstract class States {
 
     public abstract void render(Graphics g);
 
+    public void reset() {
+
+    }
+
     public void addText(GUI gui, UIObject x) {
         x.handler = handler;
         gui.addText(x);

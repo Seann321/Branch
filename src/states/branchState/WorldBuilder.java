@@ -1,8 +1,8 @@
-package states.gameState;
+package states.branchState;
 
 import branch.Branch;
 import gfx.image.Assets;
-import states.GameState;
+import states.BranchState;
 import states.Handler;
 
 import java.awt.*;
@@ -17,7 +17,7 @@ public class WorldBuilder {
     public WorldBuilder(Handler handler) {
         this.handler = handler;
         for(int i = 0; i < 4; i++){
-            selectionUI.add(new Tiles((new Rectangle(Branch.WIDTH/100, (int)(i * GameState.TileSize * 1.2) + GameState.TileSize/10,GameState.TileSize,GameState.TileSize)), handler));
+            selectionUI.add(new Tiles((new Rectangle(Branch.WIDTH/100, (int)(i * BranchState.TileSize * 1.2) + BranchState.TileSize/10, BranchState.TileSize, BranchState.TileSize)), handler));
         }
         selectionUI.get(0).tileType = Assets.VOID;
         selectionUI.get(1).tileType = Assets.WATER;

@@ -17,7 +17,7 @@ public class GUI {
     public ArrayList<UIObject> text = new ArrayList<>();
 
     public static void init() {
-        if (Main.screenSize.width <= 1600) {
+        if (Main.ScreenSize.width <= 1600) {
             font = FontLoader.loadFont(path, 20/2);
             font35 = FontLoader.loadFont(path, 35/2);
             font50 = FontLoader.loadFont(path, 50/2);

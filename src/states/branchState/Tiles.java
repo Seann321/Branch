@@ -1,7 +1,7 @@
-package states.gameState;
+package states.branchState;
 
 import gfx.image.Assets;
-import states.GameState;
+import states.BranchState;
 import states.Handler;
 
 import java.awt.*;
@@ -20,7 +20,7 @@ public class Tiles {
         this.bounds = bounds;
         this.handler = handler;
         this.cords = startingCords;
-        tileType = Assets.WATER;
+        tileType = Assets.VOID;
     }
 
     public Tiles(Rectangle bounds, Handler handler) {
@@ -38,13 +38,13 @@ public class Tiles {
         if (frozen) {
             g.drawImage(tileType, bounds.x, bounds.y, bounds.width, bounds.height, null);
         } else
-            g.drawImage(tileType, bounds.x + GameState.Camera.getX(), bounds.y + GameState.Camera.getY(), bounds.width, bounds.height, null);
+            g.drawImage(tileType, bounds.x + BranchState.Camera.getX(), bounds.y + BranchState.Camera.getY(), bounds.width, bounds.height, null);
     }
 
     public Rectangle getBounds() {
         if(frozen){
             return bounds;
         }
-        return new Rectangle(bounds.x + GameState.Camera.getX(), bounds.y + GameState.Camera.getY(), bounds.width, bounds.height);
+        return new Rectangle(bounds.x + BranchState.Camera.getX(), bounds.y + BranchState.Camera.getY(), bounds.width, bounds.height);
     }
 }

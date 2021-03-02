@@ -6,12 +6,20 @@ import java.awt.event.KeyListener;
 public class KeyManager implements KeyListener {
 
     private boolean[] keys, justPressed, cantPress;
-    public boolean up, down, left, right, shift;
+    public boolean up, down, left, right, shift, back;
+    public static String KeyLastTyped = "";
+    public static boolean LockInput = true;
 
     public KeyManager() {
         keys = new boolean[256];
         justPressed = new boolean[keys.length];
         cantPress = new boolean[keys.length];
+    }
+
+    public static String GetKeyLastTyped() {
+        String tempKey = KeyLastTyped;
+        KeyLastTyped = "";
+        return tempKey.toLowerCase();
     }
 
     public void tick() {
@@ -22,6 +30,7 @@ public class KeyManager implements KeyListener {
         left = keys[KeyEvent.VK_A];
         right = keys[KeyEvent.VK_D];
         shift = keys[KeyEvent.VK_SHIFT];
+        back = keys[KeyEvent.VK_BACK_SPACE];
 
     }
 
@@ -47,7 +56,10 @@ public class KeyManager implements KeyListener {
     }
 
     public void keyTyped(KeyEvent ke) {
-
+        if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE || LockInput){
+            return;
+        }
+        KeyLastTyped += ke.getKeyChar();
     }
 
     public void keyPressed(KeyEvent ke) {
