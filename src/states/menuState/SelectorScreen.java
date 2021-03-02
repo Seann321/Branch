@@ -9,10 +9,11 @@ import states.MenuState;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class SelectorScreen extends MenuState {
+public class SelectorScreen extends MenuState implements Serializable {
 
     public static ArrayList<Rectangle> rectangles = new ArrayList<>();
     int squareScale = 100;

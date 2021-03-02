@@ -37,12 +37,12 @@ public class Branch implements Runnable {
         this.title = title;
         handler = new Handler();
         GUI.init();
-        Assets.Init();
-        BranchState = new BranchState(handler);
-        MenuState = new MenuState(handler);
-        GrayState = new GrayState(handler);
-        SelectorScreen = new SelectorScreen(handler);
-        OptionsScreen = new OptionsScreen(handler);
+        //Assets.Init();
+        //BranchState = new BranchState(handler);
+        //MenuState = new MenuState(handler);
+        //GrayState = new GrayState(handler);
+        //SelectorScreen = new SelectorScreen(handler);
+        //OptionsScreen = new OptionsScreen(handler);
         DataState = new DataState(handler);
         EditCustomer = new EditCustomer(handler);
         handler.switchToState(DataState);

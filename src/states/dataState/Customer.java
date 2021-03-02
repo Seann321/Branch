@@ -1,16 +1,18 @@
 package states.dataState;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
-public class Customer {
+public class Customer implements Serializable {
 
     Random random = new Random();
 
     String date = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
 
+    public boolean completed = false;
     private Double ID;
     private String name, email, address, phone;
     String[] notes = new String[]{
@@ -125,12 +127,4 @@ public class Customer {
         return date;
     }
 
-    public String saveFileGen(){
-        String mixedOfTypes = "";
-        for(MediaType mt : mediaTypes){
-            mixedOfTypes+= " ";
-            mixedOfTypes+=mt.getMediaType();
-        }
-        return ID+name+email+address+phone+mixedOfTypes+notes[0]+notes[1]+notes[2]+notes[3]+notes[4];
-    }
 }

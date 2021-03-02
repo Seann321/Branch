@@ -9,9 +9,10 @@ import states.dataState.LoadSaveFile;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.*;
 import java.util.ArrayList;
 
-public class DataState extends States {
+public class DataState extends States implements Serializable {
 
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
     private ArrayList<UIObject> activeSearch = new ArrayList<>();
@@ -36,6 +37,21 @@ public class DataState extends States {
     public DataState(Handler handler) {
         super(handler);
         gui = new GUI(handler);
+
+
+        FileInputStream fis = null;
+        ObjectInputStream in = null;
+        try {
+            fis = new FileInputStream("MyData.ser");
+            in = new ObjectInputStream(fis);
+            Customers = (ArrayList) in.readObject();
+            in.close();
+            fis.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
         for (UIObject u : guiStuff) {
             addText(gui, u);
         }
@@ -46,9 +62,26 @@ public class DataState extends States {
         lookUp.setAllColors(Color.WHITE);
         enterNew.setAllColors(Color.WHITE);
         currentInput.setAllColors(Color.WHITE);
-        LoadSaveFile.createFile();
     }
 
+    public static void SaveArray(){
+        try{
+            // Serialize data object to a file
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("MyData.ser"));
+            out.writeObject(Customers);
+            out.close();
+
+            // Serialize data object to a byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+            out = new ObjectOutputStream(bos) ;
+            out.writeObject(Customers);
+            out.close();
+
+            // Get the bytes of the serialized object
+            byte[] buf = bos.toByteArray();
+        } catch (IOException e) {
+        }
+    }
 
     @Override
     public void tick() {
@@ -72,6 +105,7 @@ public class DataState extends States {
     }
 
     private ArrayList<Customer> nameMatches = new ArrayList<>();
+
 
 
     private void getKeyInput() {

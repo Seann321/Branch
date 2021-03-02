@@ -8,7 +8,7 @@ public class LoadSaveFile {
         // create a file object for the current location
         File file = new File("info.txt");
         try {
-            // trying to create a file based on the object
+            // trying to create a file based on the object/
             boolean value = file.createNewFile();
             if (value) {
                 System.out.println("The new file is created.");

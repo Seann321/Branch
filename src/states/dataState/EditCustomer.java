@@ -11,15 +11,15 @@ import states.States;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class EditCustomer extends States {
+public class EditCustomer extends States implements Serializable {
 
     private String input = "";
-    private boolean completed = false;
 
     int widthMovement = Branch.WIDTH/4;
 
@@ -94,9 +94,9 @@ public class EditCustomer extends States {
         updateMediaText();
         gui.tick();
         if(progress.wasClicked()){
-            completed = !completed;
+            DataState.CurrentCustomer.completed = !DataState.CurrentCustomer.completed;
         }
-        if(completed){
+        if(DataState.CurrentCustomer.completed){
             progress.setAllColors(Color.green);
             progress.setText("Completed");
         }else{
@@ -118,7 +118,7 @@ public class EditCustomer extends States {
         }
         editText();
         if (handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE)) {
-            LoadSaveFile.addPerson(DataState.CurrentCustomer.saveFileGen());
+            DataState.SaveArray();
             handler.switchToState(Branch.DataState);
         }
     }

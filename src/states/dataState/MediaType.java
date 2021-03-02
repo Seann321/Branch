@@ -1,6 +1,8 @@
 package states.dataState;
 
-public class MediaType {
+import java.io.Serializable;
+
+public class MediaType implements Serializable {
 
     String type;
     int amount = 0;
