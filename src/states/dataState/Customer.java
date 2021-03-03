@@ -10,7 +10,7 @@ public class Customer implements Serializable {
 
     Random random = new Random();
 
-    String date = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
+    String date;
 
     public boolean completed = false;
     private Double ID;
@@ -26,6 +26,7 @@ public class Customer implements Serializable {
         email = "EMAIL: ";
         address = "ADDRESS: ";
         phone = "PHONE: ";
+        date = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
         generateTypes();
     }
 

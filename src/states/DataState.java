@@ -5,8 +5,8 @@ import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
 import states.dataState.Customer;
-import states.dataState.LoadSaveFile;
 
+import javax.naming.Name;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
@@ -29,6 +29,9 @@ public class DataState extends States implements Serializable {
     UIObject customer9 = new UIObject("9", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 9 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject customer10 = new UIObject("10", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 10 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject currentInput = new UIObject("", Branch.WIDTH / 2, Branch.HEIGHT / 4 + GUI.font100.getSize(), true, Color.white, Color.white, GUI.font50, guiStuff);
+    UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT - 5, false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
+    UIObject version = new UIObject("Version V2.1", 5, Branch.HEIGHT - 5, false, false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
+
     public static ArrayList<Customer> Customers = new ArrayList<>();
     public static Customer CurrentCustomer = new Customer("DUMMY");
     private String input = "";
@@ -64,16 +67,16 @@ public class DataState extends States implements Serializable {
         currentInput.setAllColors(Color.WHITE);
     }
 
-    public static void SaveArray(){
-        try{
+    public static void SaveArray() {
+        try {
             // Serialize data object to a file
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("MyData.ser"));
             out.writeObject(Customers);
             out.close();
 
             // Serialize data object to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-            out = new ObjectOutputStream(bos) ;
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            out = new ObjectOutputStream(bos);
             out.writeObject(Customers);
             out.close();
 
@@ -86,6 +89,9 @@ public class DataState extends States implements Serializable {
     @Override
     public void tick() {
         gui.tick();
+        if (credits.isHovering()) {
+            credits.setAllColors(new Color((int) (Math.random() * 254), (int) (Math.random() * 254), (int) (Math.random() * 254)));
+        }
         if (enterNew.wasClicked()) {
             KeyManager.LockInput = false;
             enterNew.setText("ENTER NAME");
@@ -104,9 +110,9 @@ public class DataState extends States implements Serializable {
         getKeyInput();
     }
 
-    private ArrayList<Customer> nameMatches = new ArrayList<>();
+    public static ArrayList<Customer> NameMatches = new ArrayList<>();
 
-
+    int offset = 0;
 
     private void getKeyInput() {
         if (KeyManager.LockInput) {
@@ -126,11 +132,31 @@ public class DataState extends States implements Serializable {
         if (handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE)) {
             reset();
         }
+        int i = 0;
+        if (handler.getKM().keyJustPressed(KeyEvent.VK_DOWN) || handler.getMM().isWheelDown()) {
+            offset += 1;
+            if (10 + offset > NameMatches.size()) {
+                offset -= 1;
+            }
+        }
+        if (handler.getKM().keyJustPressed(KeyEvent.VK_UP) || handler.getMM().isWheelUp()) {
+            offset -= 1;
+            if (offset < 0) {
+                offset = 0;
+            }
+        }
 
         {
-            int i = 0;
-            for (Customer c : nameMatches) {
-                activeSearch.get(i).setText(nameMatches.get(i).getName() + "   " + nameMatches.get(i).getPhone() + "   Date Made: " + nameMatches.get(i).getDate());
+            for (Customer c : NameMatches) {
+                if (i >= 10) {
+                    break;
+                }
+                activeSearch.get(i).setText(NameMatches.get(i + offset).getName() + "   " + NameMatches.get(i + offset).getPhone() + "   Date Made: " + NameMatches.get(i + offset).getDate());
+                if(NameMatches.get(i + offset).completed){
+                    activeSearch.get(i).setColor(Color.green);
+                }else{
+                    activeSearch.get(i).setColor(Color.white);
+                }
                 i++;
             }
             for (int j = i; j < activeSearch.size(); j++) {
@@ -157,11 +183,12 @@ public class DataState extends States implements Serializable {
                 for (Customer c : Customers) {
                     String namePhoneInfo = c.getName() + c.getPhone();
                     if (namePhoneInfo.contains(input)) {
-                        if (!nameMatches.contains(c)) {
-                            nameMatches.add(c);
+                        if (!NameMatches.contains(c)) {
+                            NameMatches.add(c);
                         }
                     } else {
-                        nameMatches.remove(c);
+                        NameMatches.remove(c);
+                        offset = 0;
                     }
                 }
                 return;
@@ -183,6 +210,7 @@ public class DataState extends States implements Serializable {
 
     @Override
     public void reset() {
+        offset = 0;
         enterNew.resetColors();
         lookUp.resetColors();
         enterNew.active = true;

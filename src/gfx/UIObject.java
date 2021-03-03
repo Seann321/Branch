@@ -247,6 +247,5 @@ public class UIObject {
 
     public void setColor(Color color) {
         original = color;
-        this.color = color;
     }
 }
