@@ -5,8 +5,6 @@ import gfx.image.Assets;
 import states.*;
 import states.dataState.DataOptionsScreen;
 import states.dataState.EditCustomer;
-import states.menuState.OptionsScreen;
-import states.menuState.SelectorScreen;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -27,12 +25,7 @@ public class Branch implements Runnable {
     public static int WIDTH, HEIGHT;
     public String title;
     private boolean running = false;
-    public static BranchState BranchState;
-    public static MenuState MenuState;
-    public static GrayState GrayState;
     public static DataState DataState;
-    public static SelectorScreen SelectorScreen;
-    public static OptionsScreen OptionsScreen;
     public static DataOptionsScreen DataOptionsScreen;
     public static EditCustomer EditCustomer;
 
@@ -42,12 +35,6 @@ public class Branch implements Runnable {
         this.title = title;
         handler = new Handler();
         GUI.init();
-        //Assets.Init();
-        //BranchState = new BranchState(handler);
-        //MenuState = new MenuState(handler);
-        //GrayState = new GrayState(handler);
-        //SelectorScreen = new SelectorScreen(handler);
-        //OptionsScreen = new OptionsScreen(handler);
         DataState = new DataState(handler);
         EditCustomer = new EditCustomer(handler);
 

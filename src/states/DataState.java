@@ -22,6 +22,7 @@ public class DataState extends States implements Serializable {
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
     private ArrayList<UIObject> activeSearch = new ArrayList<>();
     UIObject lookUp = new UIObject("Lookup Customer", Branch.WIDTH / 2, Branch.HEIGHT / 4 - GUI.font100.getSize(), true, Color.white, Color.ORANGE, GUI.font100, guiStuff);
+    UIObject showCompleted = new UIObject("Hide Completed", Branch.WIDTH / 2, Branch.HEIGHT / 4 - GUI.font50.getSize() + 10, true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
     UIObject enterNew = new UIObject("Enter New Customer", Branch.WIDTH / 2, Branch.HEIGHT / 4, true, Color.white, Color.ORANGE, GUI.font100, guiStuff);
     UIObject customer1 = new UIObject("1", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject customer2 = new UIObject("2", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 2 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
@@ -35,13 +36,14 @@ public class DataState extends States implements Serializable {
     UIObject customer10 = new UIObject("10", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 10 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject currentInput = new UIObject("", Branch.WIDTH / 2, Branch.HEIGHT / 4 + GUI.font100.getSize(), true, Color.white, Color.white, GUI.font50, guiStuff);
     UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT, false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
-    UIObject version = new UIObject("Version V2.2", 5, Branch.HEIGHT - 5, false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
+    UIObject version = new UIObject("Version V2.3", 5, Branch.HEIGHT - 5, false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
     UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20, true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
 
     public static ArrayList<Customer> Customers = new ArrayList<>();
     public static Customer CurrentCustomer = new Customer("DUMMY");
     private String input = "";
     boolean lookupMode = false;
+    boolean showComplete = true;
 
     public DataState(Handler handler) {
         super(handler);
@@ -67,6 +69,7 @@ public class DataState extends States implements Serializable {
             addText(gui, u);
             u.active = false;
         }
+        showCompleted.active = false;
         lookUp.setAllColors(Color.WHITE);
         enterNew.setAllColors(Color.WHITE);
         currentInput.setAllColors(Color.WHITE);
@@ -95,7 +98,7 @@ public class DataState extends States implements Serializable {
     public void tick() {
         gui.tick();
         background.tick();
-        if(enterOptions.wasClicked()){
+        if (enterOptions.wasClicked()) {
             handler.switchToState(Branch.DataOptionsScreen);
         }
         if (credits.isHovering()) {
@@ -114,6 +117,7 @@ public class DataState extends States implements Serializable {
             KeyManager.LockInput = false;
             lookUp.setAllColors(Color.white);
             lookUp.clicked = false;
+            showCompleted.active = true;
         }
 
         getKeyInput();
@@ -161,9 +165,9 @@ public class DataState extends States implements Serializable {
                     break;
                 }
                 activeSearch.get(i).setText(NameMatches.get(i + offset).getName() + "   " + NameMatches.get(i + offset).getPhone() + "   Date Made: " + NameMatches.get(i + offset).getDate());
-                if(NameMatches.get(i + offset).completed){
+                if (NameMatches.get(i + offset).completed) {
                     activeSearch.get(i).setColor(Color.green);
-                }else{
+                } else {
                     activeSearch.get(i).setColor(Color.white);
                 }
                 i++;
@@ -185,6 +189,16 @@ public class DataState extends States implements Serializable {
 
             if (lookupMode) {
 
+                if (showCompleted.wasClicked()) {
+                    if (showComplete) {
+                        showCompleted.setText("SHOW COMPLETED");
+                        showComplete = false;
+                    } else {
+                        showCompleted.setText("HIDE COMPLETED");
+                        showComplete = true;
+                    }
+                }
+
                 for (UIObject u : activeSearch) {
                     u.active = true;
                 }
@@ -194,8 +208,13 @@ public class DataState extends States implements Serializable {
                     if (namePhoneInfo.contains(input)) {
                         if (!NameMatches.contains(c)) {
                             NameMatches.add(c);
+
                         }
                     } else {
+                        NameMatches.remove(c);
+                        offset = 0;
+                    }
+                    if(c.completed && !showComplete){
                         NameMatches.remove(c);
                         offset = 0;
                     }
@@ -224,6 +243,7 @@ public class DataState extends States implements Serializable {
         lookUp.resetColors();
         enterNew.active = true;
         lookUp.active = true;
+        showCompleted.active = false;
         KeyManager.LockInput = true;
         lookupMode = false;
         enterNew.setText("Enter New Customer");
