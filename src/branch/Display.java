@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 public class Display {
 
     private JFrame frame;
-    private Canvas canvas;
+    public static Canvas Canvas;
 
     private final String title;
     private int width, height;
@@ -29,14 +29,14 @@ public class Display {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        canvas = new Canvas();
-        canvas.setPreferredSize(new Dimension(width, height));
-        canvas.setMaximumSize(new Dimension(width, height));
-        canvas.setMinimumSize(new Dimension(width, height));
-        canvas.setFocusable(false);
-        canvas.setBackground(Color.black);
+        Canvas = new Canvas();
+        Canvas.setPreferredSize(new Dimension(width, height));
+        Canvas.setMaximumSize(new Dimension(width, height));
+        Canvas.setMinimumSize(new Dimension(width, height));
+        Canvas.setFocusable(false);
+        Canvas.setBackground(Color.black);
 
-        frame.add(canvas);
+        frame.add(Canvas);
         frame.pack();
 
     }
@@ -64,22 +64,22 @@ public class Display {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        canvas.setPreferredSize(new Dimension(x, y));
-        canvas.setMaximumSize(new Dimension(x, y));
-        canvas.setMinimumSize(new Dimension(x, y));
-        canvas.setFocusable(false);
-        canvas.setBackground(Color.black);
+        Canvas.setPreferredSize(new Dimension(x, y));
+        Canvas.setMaximumSize(new Dimension(x, y));
+        Canvas.setMinimumSize(new Dimension(x, y));
+        Canvas.setFocusable(false);
+        Canvas.setBackground(Color.black);
 
-        frame.add(canvas);
+        frame.add(Canvas);
         frame.pack();
     }
 
     public void setColor(Color color) {
-        canvas.setBackground(color);
+        Canvas.setBackground(color);
     }
 
     public Canvas getCanvas() {
-        return canvas;
+        return Canvas;
     }
 
     public JFrame getFrame() {

@@ -3,13 +3,17 @@ package branch;
 import gfx.GUI;
 import gfx.image.Assets;
 import states.*;
+import states.dataState.DataOptionsScreen;
 import states.dataState.EditCustomer;
 import states.menuState.OptionsScreen;
 import states.menuState.SelectorScreen;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +33,7 @@ public class Branch implements Runnable {
     public static DataState DataState;
     public static SelectorScreen SelectorScreen;
     public static OptionsScreen OptionsScreen;
+    public static DataOptionsScreen DataOptionsScreen;
     public static EditCustomer EditCustomer;
 
     public Branch(String title, int width, int height) {
@@ -45,6 +50,7 @@ public class Branch implements Runnable {
         //OptionsScreen = new OptionsScreen(handler);
         DataState = new DataState(handler);
         EditCustomer = new EditCustomer(handler);
+
         handler.switchToState(DataState);
     }
 
@@ -57,6 +63,7 @@ public class Branch implements Runnable {
         display.getCanvas().addMouseListener(handler.getMM());
         display.getCanvas().addMouseMotionListener(handler.getMM());
         display.getCanvas().addMouseWheelListener(handler.getMM());
+        DataOptionsScreen = new DataOptionsScreen(handler);
     }
 
 

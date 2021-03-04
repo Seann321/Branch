@@ -18,6 +18,7 @@ public class OptionsScreen extends States {
         super(handler);
         gui = new GUI(handler);
         gui.addText(volumeSwitcher);
+
     }
 
     @Override

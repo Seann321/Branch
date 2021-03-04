@@ -23,6 +23,7 @@ public class EditCustomer extends States implements Serializable {
     private String input = "";
 
     int widthMovement = Branch.WIDTH / 4;
+    Background background;
 
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
     private ArrayList<UIObject> mediaTypeGUI = new ArrayList<>();
@@ -81,6 +82,7 @@ public class EditCustomer extends States implements Serializable {
     public EditCustomer(Handler handler) {
         super(handler);
         gui = new GUI(handler);
+        background = new Background(handler);
         addText(gui, progress);
         for (UIObject u : guiStuff) {
             addText(gui, u);
@@ -96,6 +98,7 @@ public class EditCustomer extends States implements Serializable {
 
     @Override
     public void tick() {
+        background.tick();
         updateMediaText();
         gui.tick();
         deleteCustomer();
@@ -155,6 +158,7 @@ public class EditCustomer extends States implements Serializable {
             DataState.Customers.remove(DataState.CurrentCustomer);
             DataState.NameMatches.remove(DataState.CurrentCustomer);
             handler.switchToState(Branch.DataState);
+            DataState.SaveArray();
         }
     }
 
@@ -265,6 +269,7 @@ public class EditCustomer extends States implements Serializable {
 
     @Override
     public void render(Graphics g) {
+        background.render(g);
         gui.render(g);
     }
 }

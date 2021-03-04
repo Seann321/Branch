@@ -1,9 +1,11 @@
 package states;
 
 import branch.Branch;
+import branch.Display;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
+import states.dataState.Background;
 import states.dataState.Customer;
 
 import javax.naming.Name;
@@ -11,8 +13,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DataState extends States implements Serializable {
+
+    private Background background;
 
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
     private ArrayList<UIObject> activeSearch = new ArrayList<>();
@@ -29,8 +34,9 @@ public class DataState extends States implements Serializable {
     UIObject customer9 = new UIObject("9", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 9 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject customer10 = new UIObject("10", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 10 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject currentInput = new UIObject("", Branch.WIDTH / 2, Branch.HEIGHT / 4 + GUI.font100.getSize(), true, Color.white, Color.white, GUI.font50, guiStuff);
-    UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT - 5, false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
-    UIObject version = new UIObject("Version V2.1", 5, Branch.HEIGHT - 5, false, false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
+    UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT, false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
+    UIObject version = new UIObject("Version V2.2", 5, Branch.HEIGHT - 5, false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
+    UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20, true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
 
     public static ArrayList<Customer> Customers = new ArrayList<>();
     public static Customer CurrentCustomer = new Customer("DUMMY");
@@ -40,8 +46,7 @@ public class DataState extends States implements Serializable {
     public DataState(Handler handler) {
         super(handler);
         gui = new GUI(handler);
-
-
+        background = new Background(handler);
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
@@ -51,7 +56,7 @@ public class DataState extends States implements Serializable {
             in.close();
             fis.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println("No Customers Found");
         }
 
 
@@ -89,6 +94,10 @@ public class DataState extends States implements Serializable {
     @Override
     public void tick() {
         gui.tick();
+        background.tick();
+        if(enterOptions.wasClicked()){
+            handler.switchToState(Branch.DataOptionsScreen);
+        }
         if (credits.isHovering()) {
             credits.setAllColors(new Color((int) (Math.random() * 254), (int) (Math.random() * 254), (int) (Math.random() * 254)));
         }
@@ -244,6 +253,7 @@ public class DataState extends States implements Serializable {
 
     @Override
     public void render(Graphics g) {
+        background.render(g);
         gui.render(g);
     }
 }
