@@ -32,7 +32,7 @@ public class EditCustomer extends States implements Serializable {
     UIObject customerAddress = new UIObject(DataState.CurrentCustomer.getAddress(), 10, (GUI.font50.getSize() * 2) + 5, false, Color.white, Color.ORANGE, GUI.font35, guiStuff);
 
     UIObject creationDate = new UIObject(DataState.CurrentCustomer.date, Branch.WIDTH, GUI.font35.getSize(), false, true, Color.white, Color.ORANGE, GUI.font35, guiStuff);
-    UIObject delete = new UIObject("DELETE", Branch.WIDTH - 5, Branch.HEIGHT - 5, false, true, Color.RED, Color.ORANGE, GUI.font35, guiStuff);
+    UIObject delete = new UIObject("DELETE", Branch.WIDTH - 5, Branch.HEIGHT - 5 - GUI.font35.getSize(), false, true, Color.RED, Color.ORANGE, GUI.font35, guiStuff);
 
     UIObject customerEmail = new UIObject(DataState.CurrentCustomer.getEmail(), 10, (GUI.font50.getSize() * 3) + 5, false, Color.white, Color.ORANGE, GUI.font35, guiStuff);
     UIObject customerPhone = new UIObject(DataState.CurrentCustomer.getPhone(), 10, (GUI.font50.getSize() * 4) + 5, false, Color.white, Color.ORANGE, GUI.font35, guiStuff);

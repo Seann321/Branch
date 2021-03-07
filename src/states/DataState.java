@@ -35,9 +35,9 @@ public class DataState extends States implements Serializable {
     UIObject customer9 = new UIObject("9", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 9 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject customer10 = new UIObject("10", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 10 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject currentInput = new UIObject("", Branch.WIDTH / 2, Branch.HEIGHT / 4 + GUI.font100.getSize(), true, Color.white, Color.white, GUI.font50, guiStuff);
-    UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT, false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
-    UIObject version = new UIObject("Version V2.3", 5, Branch.HEIGHT - 5, false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
-    UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20, true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
+    UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT - GUI.font35.getSize(), false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
+    UIObject version = new UIObject("Version V2.4", 5, Branch.HEIGHT - 5- GUI.font35.getSize(), false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
+    UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20- GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
 
     public static ArrayList<Customer> Customers = new ArrayList<>();
     public static Customer CurrentCustomer = new Customer("DUMMY");
@@ -207,16 +207,23 @@ public class DataState extends States implements Serializable {
                     String namePhoneInfo = c.getName() + c.getPhone();
                     if (namePhoneInfo.contains(input)) {
                         if (!NameMatches.contains(c)) {
-                            NameMatches.add(c);
+                            if (c.completed && !showComplete) {
 
+                            } else {
+                                NameMatches.add(c);
+                            }
                         }
                     } else {
-                        NameMatches.remove(c);
-                        offset = 0;
+                        if (NameMatches.contains(c)) {
+                            NameMatches.remove(c);
+                            offset = 0;
+                        }
                     }
-                    if(c.completed && !showComplete){
-                        NameMatches.remove(c);
-                        offset = 0;
+                    if (c.completed && !showComplete) {
+                        if (NameMatches.contains(c)) {
+                            NameMatches.remove(c);
+                            offset = 0;
+                        }
                     }
                 }
                 return;
