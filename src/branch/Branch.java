@@ -1,17 +1,12 @@
 package branch;
 
 import gfx.GUI;
-import gfx.image.Assets;
 import states.*;
 import states.dataState.DataOptionsScreen;
 import states.dataState.EditCustomer;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,19 +25,18 @@ public class Branch implements Runnable {
     public static EditCustomer EditCustomer;
 
     public Branch(String title, int width, int height) {
-        this.WIDTH = width;
-        this.HEIGHT = height;
+        WIDTH = width;
+        HEIGHT = height;
         this.title = title;
         handler = new Handler();
         GUI.init();
         DataState = new DataState(handler);
         EditCustomer = new EditCustomer(handler);
-
         handler.switchToState(DataState);
     }
 
 
-    public void init() throws IOException {
+    public void init() {
         display = new Display(title, WIDTH, HEIGHT);
         display.getFrame().addKeyListener(handler.getKM());
         display.getFrame().addMouseListener(handler.getMM());
@@ -84,11 +78,7 @@ public class Branch implements Runnable {
 
     @Override
     public void run() {
-        try {
-            init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        init();
 
         double timePerTick;
         double delta = 0;

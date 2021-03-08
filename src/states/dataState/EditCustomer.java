@@ -166,10 +166,7 @@ public class EditCustomer extends States implements Serializable {
         if (activeUIObject == null) {
             for (UIObject u : guiStuff) {
                 if (u.wasClicked()) {
-                    input = u.getText();
-                    activeUIObject = u;
-                    u.setAllColors(Color.ORANGE);
-                    KeyManager.LockInput = false;
+                    setActiveUIObject(u);
                 }
             }
             if (activeUIObject == null) {
@@ -179,7 +176,20 @@ public class EditCustomer extends States implements Serializable {
         activeUIObject.tick();
         getKeyInput();
         activeUIObject.setText(input);
-        if (handler.getKM().keyJustPressed(KeyEvent.VK_ENTER)) {
+        boolean clickEnter = false;
+        UIObject clicked = null;
+        for(UIObject u : guiStuff){
+            if(u.wasClicked()){
+                clickEnter = true;
+                clicked = u;
+            }
+        }
+        for(UIObject u : mediaAmountGUI){
+            if(u.wasClicked()){
+                clickEnter = true;
+            }
+        }
+        if (handler.getKM().keyJustPressed(KeyEvent.VK_ENTER) || clickEnter) {
             input = "";
             activeUIObject.resetColors();
             KeyManager.LockInput = true;
@@ -188,7 +198,17 @@ public class EditCustomer extends States implements Serializable {
             for (UIObject u : guiStuff) {
                 u.clicked = false;
             }
+            if(clicked !=null){
+                setActiveUIObject(clicked);
+            }
         }
+    }
+
+    void setActiveUIObject(UIObject u){
+        input = u.getText();
+        activeUIObject = u;
+        u.setAllColors(Color.ORANGE);
+        KeyManager.LockInput = false;
     }
 
     private void updateMediaText() {
