@@ -1,6 +1,7 @@
 package branch;
 
 import gfx.GUI;
+import server.Server;
 import states.*;
 import states.dataState.DataOptionsScreen;
 import states.dataState.EditCustomer;
@@ -23,6 +24,7 @@ public class Branch implements Runnable {
     public static DataState DataState;
     public static DataOptionsScreen DataOptionsScreen;
     public static EditCustomer EditCustomer;
+    public static Server Server;
 
     public Branch(String title, int width, int height) {
         WIDTH = width;
@@ -33,6 +35,7 @@ public class Branch implements Runnable {
         DataState = new DataState(handler);
         EditCustomer = new EditCustomer(handler);
         handler.switchToState(DataState);
+        Server = new Server();
     }
 
 
@@ -51,6 +54,9 @@ public class Branch implements Runnable {
     public void tick() {
         handler.getKM().tick();
         Handler.currentState.tick();
+        if(server.Server.runServer){
+            Server.tick();
+        }
     }
 
 
