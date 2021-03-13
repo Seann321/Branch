@@ -25,12 +25,12 @@ public class Client {
             bytesRead = is.read(mybytearray, 0, mybytearray.length);
             current = bytesRead;
 
-            do {
-                bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
-                if (bytesRead >= 0) current += bytesRead;
-            } while (bytesRead > -1);
-
-            bos.write(mybytearray, 0, current);
+            int count;
+            byte[] buffer = new byte[8192]; // or 4096, or more
+            while ((count = is.read(buffer)) > 0)
+            {
+                bos.write(buffer, 0, count);
+            }
             bos.flush();
             bos.close();
             socket.close();

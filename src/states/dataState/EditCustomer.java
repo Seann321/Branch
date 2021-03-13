@@ -4,6 +4,7 @@ import branch.Branch;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
+import states.ConnectState;
 import states.DataState;
 import states.Handler;
 import states.States;
@@ -17,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+
+import static states.DataState.client;
 
 public class EditCustomer extends States implements Serializable {
 
@@ -145,6 +148,8 @@ public class EditCustomer extends States implements Serializable {
         if (handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE) && KeyManager.LockInput) {
             DataState.SaveArray();
             handler.switchToState(Branch.DataState);
+            if (!ConnectState.connectIP.equals(""))
+                client.uploadFile();
         }
     }
 

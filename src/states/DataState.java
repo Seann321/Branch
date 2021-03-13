@@ -47,7 +47,7 @@ public class DataState extends States implements Serializable {
     private String input = "";
     boolean lookupMode = false;
     boolean showComplete = true;
-    static Client client = new Client();
+    public static Client client = new Client();
 
     public DataState(Handler handler) {
         super(handler);
@@ -298,8 +298,6 @@ public class DataState extends States implements Serializable {
             u.active = false;
             u.clicked = false;
         }
-        if (!ConnectState.connectIP.equals(""))
-            client.uploadFile();
     }
 
     private void captureName() {
