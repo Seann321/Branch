@@ -1,5 +1,7 @@
 package server;
 
+import states.ConnectState;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -10,7 +12,7 @@ public class Client {
     File myFile = new File("MyData.ser");
 
     public void downloadFile() {
-        try (Socket socket = new Socket("192.168.0.11", Server.PORT)) {
+        try (Socket socket = new Socket(ConnectState.connectIP, Server.PORT)) {
             PrintWriter pr = new PrintWriter(socket.getOutputStream(), true);
             pr.println("DOWNLOAD");
             ftp = new FileTransferProcessor(socket);
@@ -21,7 +23,7 @@ public class Client {
     }
 
     public void uploadFile() {
-        try (Socket socket = new Socket("192.168.0.11", Server.PORT)) {
+        try (Socket socket = new Socket(ConnectState.connectIP, Server.PORT)) {
             PrintWriter pr = new PrintWriter(socket.getOutputStream(), true);
             pr.println("UPLOAD");
             ftp = new FileTransferProcessor(socket);

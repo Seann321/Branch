@@ -148,12 +148,12 @@ public class DataState extends States implements Serializable {
         if (Server.runServer) {
             serverDetails.setText("SERVER RUNNING AT " + Server.getIPAddress());
             serverDetails.setAllColors(Color.WHITE);
-            //return;
+            return;
         }
         if (!Server.runServer && !ConnectState.connectIP.equals("")) {
             serverDetails.setText("CLIENT CONNECT AT " + ConnectState.connectIP);
             serverDetails.setAllColors(Color.WHITE);
-            //return;
+            return;
         }
         if (serverDetails.wasClicked()) {
             serverDetails.clicked = false;

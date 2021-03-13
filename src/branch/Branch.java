@@ -107,7 +107,7 @@ public class Branch implements Runnable {
             }
             if (timer >= 1000000000) {
                 if (ticks != FPS) {
-                    System.out.println("FPS: " + ticks);
+                    //System.out.println("FPS: " + ticks);
                 }
                 ticks = 0;
                 timer = 0;

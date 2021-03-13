@@ -1,9 +1,12 @@
 package server;
 
 import branch.Main;
+import states.DataState;
+import states.dataState.Customer;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -18,6 +21,8 @@ public class Server implements Runnable {
     Socket socket;
     FileTransferProcessor ftp;
     File myFile = new File("MyData.ser");
+    static ArrayList<Customer> TempCustomers = new ArrayList<>();
+
 
     public Server() {
     }
@@ -43,7 +48,34 @@ public class Server implements Runnable {
     }
 
     private void downloadData() throws IOException {
-        ftp.receiveFile("MyData.ser");
+        ftp.receiveFile("Temp/MyData.ser");
+        mergeData();
+        DataState.SaveArray();
+    }
+
+    private void mergeData() {
+        updateFromData();
+        for (Customer t : TempCustomers) {
+            if(!DataState.Customers.contains(t)){
+                DataState.Customers.add(t);
+            }
+        }
+    }
+
+    private void updateFromData() {
+        FileInputStream fis = null;
+        ObjectInputStream in = null;
+        try {
+            fis = new FileInputStream("Temp/MyData.ser");
+            in = new ObjectInputStream(fis);
+            TempCustomers.clear();
+            TempCustomers = (ArrayList) in.readObject();
+            System.out.println(TempCustomers.size());
+            in.close();
+            fis.close();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     private void init() {
