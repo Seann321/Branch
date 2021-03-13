@@ -57,9 +57,6 @@ public class Branch implements Runnable {
     public void tick() {
         handler.getKM().tick();
         Handler.currentState.tick();
-        if(server.Server.runServer){
-            Server.tick();
-        }
     }
 
 
