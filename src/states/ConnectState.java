@@ -15,7 +15,7 @@ public class ConnectState extends States {
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
 
     String input = "";
-    String connectIP = "";
+    public static String connectIP = "";
     Background background;
     UIObject enterIpAddress = new UIObject("Enter IP Address", Branch.WIDTH / 2, Branch.HEIGHT / 4 - GUI.font100.getSize(), true, Color.white, Color.white, GUI.font100, guiStuff);
     UIObject IPInput = new UIObject("", Branch.WIDTH / 2, Branch.HEIGHT / 4, true, Color.white, Color.white, GUI.font100, guiStuff);
@@ -37,6 +37,7 @@ public class ConnectState extends States {
         getKeyInput();
         IPInput.setText(input);
         if(handler.getKM().keyJustPressed(KeyEvent.VK_ENTER)){
+            input = input.substring(0, input.length() - 1);
             connectIP = input;
             KeyManager.LockInput = true;
         }

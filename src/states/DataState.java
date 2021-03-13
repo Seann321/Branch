@@ -38,8 +38,8 @@ public class DataState extends States implements Serializable {
     UIObject customer10 = new UIObject("10", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 10 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject currentInput = new UIObject("", Branch.WIDTH / 2, Branch.HEIGHT / 4 + GUI.font100.getSize(), true, Color.white, Color.white, GUI.font50, guiStuff);
     UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT - GUI.font35.getSize(), false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
-    UIObject version = new UIObject("Version V" + versionNumber, 5, Branch.HEIGHT - 5- GUI.font35.getSize(), false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
-    UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20- GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
+    UIObject version = new UIObject("Version V" + versionNumber, 5, Branch.HEIGHT - 5 - GUI.font35.getSize(), false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
+    UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20 - GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
     UIObject serverDetails = new UIObject("Connect To Server", 0, GUI.font.getSize(), false, Color.white, Color.ORANGE, GUI.font, guiStuff);
 
     public static ArrayList<Customer> Customers = new ArrayList<>();
@@ -47,7 +47,7 @@ public class DataState extends States implements Serializable {
     private String input = "";
     boolean lookupMode = false;
     boolean showComplete = true;
-    Client client = new Client();
+    static Client client = new Client();
 
     public DataState(Handler handler) {
         super(handler);
@@ -104,9 +104,6 @@ public class DataState extends States implements Serializable {
         gui.tick();
         background.tick();
         setServerDetails();
-        if(handler.getKM().keyJustPressed(KeyEvent.VK_M)){
-            client.downloadFile();
-        }
         if (enterOptions.wasClicked()) {
             handler.switchToState(Branch.DataOptionsScreen);
         }
@@ -120,6 +117,9 @@ public class DataState extends States implements Serializable {
             lookUp.active = false;
         }
         if (lookUp.wasClicked()) {
+            if (!ConnectState.connectIP.equals("")) {
+                client.downloadFile();
+            }
             lookupMode = true;
             enterNew.active = false;
             lookUp.setText("SEARCH BY NAME OR PHONE");
@@ -136,13 +136,13 @@ public class DataState extends States implements Serializable {
 
     int offset = 0;
 
-    private void setServerDetails(){
-        if(Server.runServer){
+    private void setServerDetails() {
+        if (Server.runServer) {
             serverDetails.setText("SERVER RUNNING AT " + Server.getIPAddress());
             serverDetails.setAllColors(Color.WHITE);
             return;
         }
-        if(serverDetails.wasClicked()){
+        if (serverDetails.wasClicked()) {
             serverDetails.clicked = false;
             handler.switchToState(Branch.ConnectState);
         }
