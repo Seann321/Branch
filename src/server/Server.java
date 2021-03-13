@@ -49,21 +49,21 @@ public class Server implements Runnable {
     }
 
     private void downloadData() throws IOException {
-        ftp.receiveFile("ToAdd.ser");
+        ftp.receiveFile("MyData.ser");
         mergeData();
         DataState.SaveArray();
     }
 
     private void mergeData() {
         updateFromData();
-        DataState.Customers.addAll(TempCustomers);
+        DataState.Customers = TempCustomers;
     }
 
     private void updateFromData() {
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
-            fis = new FileInputStream("ToAdd.ser");
+            fis = new FileInputStream("MyData.ser");
             in = new ObjectInputStream(fis);
             TempCustomers.clear();
             TempCustomers = (ArrayList) in.readObject();

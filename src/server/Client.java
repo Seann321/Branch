@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 public class Client {
 
     FileTransferProcessor ftp;
-    File myFile = new File("ToAdd.ser");
+    File myFile = new File("MyData.ser");
 
     public void downloadFile() {
         try (Socket socket = new Socket(ConnectState.connectIP, Server.PORT)) {
