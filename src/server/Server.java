@@ -4,7 +4,6 @@ import branch.Main;
 
 import java.io.*;
 import java.net.*;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +12,7 @@ public class Server implements Runnable{
 
     public static boolean runServer = false;
     private Thread thread;
-    private static final int PORT = 1453;
+    public static final int PORT = 1453;
     ServerSocket serverSocket;
     Socket socket;
     InputStream is;
@@ -24,15 +23,23 @@ public class Server implements Runnable{
 
     public void tick() throws IOException {
         socket = serverSocket.accept();
-        is = socket.getInputStream();
-        OutputStream output = socket.getOutputStream();
-        PrintWriter writer = new PrintWriter(output, true);
-        writer.println(new Date().toString());
+        //Sendfile
+        File myFile = new File ("MyData.ser");
+        byte [] mybytearray  = new byte [(int)myFile.length()];
+        FileInputStream fis = new FileInputStream(myFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        bis.read(mybytearray,0,mybytearray.length);
+        OutputStream os = socket.getOutputStream();
+        System.out.println("Sending...");
+        os.write(mybytearray,0,mybytearray.length);
+        os.flush();
+        socket.close();
     }
 
     private void init(){
         try {
             serverSocket = new ServerSocket(PORT);
+            System.out.println("Server started on " + getIPAddress() + ":" + PORT);
         } catch (IOException e) {
             e.printStackTrace();
         }

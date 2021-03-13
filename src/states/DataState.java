@@ -1,20 +1,18 @@
 package states;
 
 import branch.Branch;
-import branch.Display;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
+import server.Client;
 import server.Server;
 import states.dataState.Background;
 import states.dataState.Customer;
 
-import javax.naming.Name;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class DataState extends States implements Serializable {
 
@@ -49,6 +47,7 @@ public class DataState extends States implements Serializable {
     private String input = "";
     boolean lookupMode = false;
     boolean showComplete = true;
+    Client client = new Client();
 
     public DataState(Handler handler) {
         super(handler);
@@ -105,6 +104,9 @@ public class DataState extends States implements Serializable {
         gui.tick();
         background.tick();
         setServerDetails();
+        if(handler.getKM().keyJustPressed(KeyEvent.VK_M)){
+            client.downloadFile();
+        }
         if (enterOptions.wasClicked()) {
             handler.switchToState(Branch.DataOptionsScreen);
         }
