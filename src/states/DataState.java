@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class DataState extends States implements Serializable {
 
     private Background background;
-    private double versionNumber = 2.5;
+    private double versionNumber = 3.0;
 
     public static Server Server;
 
@@ -148,12 +148,12 @@ public class DataState extends States implements Serializable {
         if (Server.runServer) {
             serverDetails.setText("SERVER RUNNING AT " + Server.getIPAddress());
             serverDetails.setAllColors(Color.WHITE);
-            return;
+            //return;
         }
         if (!Server.runServer && !ConnectState.connectIP.equals("")) {
             serverDetails.setText("CLIENT CONNECT AT " + ConnectState.connectIP);
             serverDetails.setAllColors(Color.WHITE);
-            return;
+            //return;
         }
         if (serverDetails.wasClicked()) {
             serverDetails.clicked = false;
@@ -298,6 +298,8 @@ public class DataState extends States implements Serializable {
             u.active = false;
             u.clicked = false;
         }
+        if (!ConnectState.connectIP.equals(""))
+            client.uploadFile();
     }
 
     private void captureName() {
