@@ -16,25 +16,18 @@ public class Server implements Runnable {
     public static final int PORT = 1453;
     ServerSocket serverSocket;
     Socket socket;
-    int filesize = 6022386;
-    int bytesRead;
-    int current = 0;
+    FileTransferProcessor ftp;
+    File myFile = new File("MyData.ser");
 
     public Server() {
-
     }
 
     Scanner in;
-    InputStream is;
-    PrintWriter pr;
-    String FileName;
-    int FileSize;
 
     public void manageData() throws IOException {
         socket = serverSocket.accept();
+        ftp = new FileTransferProcessor(socket);
         in = new Scanner(socket.getInputStream());
-        is = socket.getInputStream();
-        pr = new PrintWriter(socket.getOutputStream(), true);
         String line = in.nextLine();
         if (line.equals("UPLOAD")) {
             downloadData();
@@ -46,35 +39,11 @@ public class Server implements Runnable {
     }
 
     private void uploadData() throws IOException {
-        File myFile = new File("MyData.ser");
-        byte[] mybytearray = new byte[(int) myFile.length()];
-        FileInputStream fis = new FileInputStream(myFile);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        System.out.println(bis.read(mybytearray, 0, mybytearray.length));
-        OutputStream os = socket.getOutputStream();
-        System.out.println("Sending to client...");
-        os.write(mybytearray, 0, mybytearray.length);
-        os.flush();
-        socket.close();
+        ftp.sendFile(myFile);
     }
 
     private void downloadData() throws IOException {
-
-        FileName = in.nextLine();
-        FileSize = in.nextInt();
-        FileOutputStream fos = new FileOutputStream(FileName);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        byte[] filebyte = new byte[FileSize];
-
-        int file = is.read(filebyte, 0, filebyte.length);
-        bos.write(filebyte, 0, file);
-        System.out.println("Incoming File: " + FileName);
-        System.out.println("Size: " + FileSize + "Byte");
-        if (FileSize == file) System.out.println("File is verified");
-        else System.out.println("File is corrupted. File Recieved " + file + " Byte");
-        pr.println("File Recieved Successfully.");
-        bos.close();
-        socket.close();
+        ftp.receiveFile("MyData.ser");
     }
 
     private void init() {
