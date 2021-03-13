@@ -298,8 +298,6 @@ public class DataState extends States implements Serializable {
             u.active = false;
             u.clicked = false;
         }
-        if (!ConnectState.connectIP.equals(""))
-            client.uploadFile();
     }
 
     private void captureName() {

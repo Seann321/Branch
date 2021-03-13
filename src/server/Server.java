@@ -15,7 +15,6 @@ public class Server implements Runnable{
     public static final int PORT = 1453;
     ServerSocket serverSocket;
     Socket socket;
-    InputStream is;
 
     public Server() {
 
@@ -23,39 +22,16 @@ public class Server implements Runnable{
 
     public void manageData() throws IOException {
         socket = serverSocket.accept();
-        //SendFile
+        //Sendfile
         File myFile = new File ("MyData.ser");
         byte [] mybytearray  = new byte [(int)myFile.length()];
         FileInputStream fis = new FileInputStream(myFile);
         BufferedInputStream bis = new BufferedInputStream(fis);
         System.out.println(bis.read(mybytearray,0,mybytearray.length));
         OutputStream os = socket.getOutputStream();
-        System.out.println("Sending...");
+        System.out.println("Sending to client...");
         os.write(mybytearray,0,mybytearray.length);
         os.flush();
-
-        //DownloadFile
-        int filesize = 6022386;
-        long start = System.currentTimeMillis();
-        int bytesRead;
-        int current = 0;
-        mybytearray = new byte[filesize];
-        InputStream is = socket.getInputStream();
-        FileOutputStream fos = new FileOutputStream("MyData.ser");
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        bytesRead = is.read(mybytearray, 0, mybytearray.length);
-        current = bytesRead;
-
-        do {
-            bytesRead =
-                    is.read(mybytearray, current, (mybytearray.length - current));
-            if (bytesRead >= 0) current += bytesRead;
-        } while (bytesRead > -1);
-
-        bos.write(mybytearray, 0, current);
-        bos.flush();
-        long end = System.currentTimeMillis();
-        System.out.println(end - start);
         socket.close();
 
     }
