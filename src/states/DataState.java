@@ -70,7 +70,7 @@ public class DataState extends States implements Serializable {
         currentInput.setAllColors(Color.WHITE);
     }
 
-    private void updateFromData(){
+    private void updateFromData() {
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
@@ -126,8 +126,8 @@ public class DataState extends States implements Serializable {
         if (lookUp.wasClicked()) {
             if (!ConnectState.connectIP.equals("")) {
                 client.downloadFile();
-                updateFromData();
             }
+            updateFromData();
             lookupMode = true;
             enterNew.active = false;
             lookUp.setText("SEARCH BY NAME OR PHONE");
@@ -150,7 +150,7 @@ public class DataState extends States implements Serializable {
             serverDetails.setAllColors(Color.WHITE);
             return;
         }
-        if(!Server.runServer && !ConnectState.connectIP.equals("")){
+        if (!Server.runServer && !ConnectState.connectIP.equals("")) {
             serverDetails.setText("CLIENT CONNECT AT " + ConnectState.connectIP);
             serverDetails.setAllColors(Color.WHITE);
             return;
@@ -298,6 +298,8 @@ public class DataState extends States implements Serializable {
             u.active = false;
             u.clicked = false;
         }
+        if (!ConnectState.connectIP.equals(""))
+            client.uploadFile();
     }
 
     private void captureName() {

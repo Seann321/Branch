@@ -46,7 +46,26 @@ public class Client {
     }
 
     public void uploadFile() {
+        try (Socket socket = new Socket("192.168.0.11", Server.PORT)) {
 
+            File myFile = new File ("MyData.ser");
+            byte [] mybytearray  = new byte [(int)myFile.length()];
+            FileInputStream fis = new FileInputStream(myFile);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            System.out.println(bis.read(mybytearray,0,mybytearray.length));
+            OutputStream os = socket.getOutputStream();
+            System.out.println("Sending...");
+            os.write(mybytearray,0,mybytearray.length);
+            os.flush();
+
+        } catch (UnknownHostException ex) {
+
+            System.out.println("Server not found: " + ex.getMessage());
+
+        } catch (IOException ex) {
+
+            System.out.println("I/O error: " + ex.getMessage());
+        }
     }
 }
 
