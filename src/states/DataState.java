@@ -5,6 +5,7 @@ import branch.Display;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
+import server.Server;
 import states.dataState.Background;
 import states.dataState.Customer;
 
@@ -19,6 +20,8 @@ public class DataState extends States implements Serializable {
 
     private Background background;
     private double versionNumber = 2.5;
+
+    public static Server Server;
 
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
     private ArrayList<UIObject> activeSearch = new ArrayList<>();
@@ -39,6 +42,7 @@ public class DataState extends States implements Serializable {
     UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT - GUI.font35.getSize(), false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
     UIObject version = new UIObject("Version V" + versionNumber, 5, Branch.HEIGHT - 5- GUI.font35.getSize(), false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
     UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20- GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
+    UIObject serverDetails = new UIObject("Connect To Server", 0, GUI.font.getSize(), false, Color.white, Color.ORANGE, GUI.font, guiStuff);
 
     public static ArrayList<Customer> Customers = new ArrayList<>();
     public static Customer CurrentCustomer = new Customer("DUMMY");
@@ -50,6 +54,7 @@ public class DataState extends States implements Serializable {
         super(handler);
         gui = new GUI(handler);
         background = new Background(handler);
+        Server = new Server();
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
@@ -99,6 +104,7 @@ public class DataState extends States implements Serializable {
     public void tick() {
         gui.tick();
         background.tick();
+        setServerDetails();
         if (enterOptions.wasClicked()) {
             handler.switchToState(Branch.DataOptionsScreen);
         }
@@ -127,6 +133,18 @@ public class DataState extends States implements Serializable {
     public static ArrayList<Customer> NameMatches = new ArrayList<>();
 
     int offset = 0;
+
+    private void setServerDetails(){
+        if(Server.runServer){
+            serverDetails.setText("SERVER RUNNING AT " + Server.getIPAddress());
+            serverDetails.setAllColors(Color.WHITE);
+            return;
+        }
+        if(serverDetails.wasClicked()){
+            serverDetails.clicked = false;
+            handler.switchToState(Branch.ConnectState);
+        }
+    }
 
     private void getKeyInput() {
         if (KeyManager.LockInput) {

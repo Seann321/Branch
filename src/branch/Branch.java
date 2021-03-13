@@ -8,6 +8,7 @@ import states.dataState.EditCustomer;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ public class Branch implements Runnable {
     public static DataState DataState;
     public static DataOptionsScreen DataOptionsScreen;
     public static EditCustomer EditCustomer;
+    public static ConnectState ConnectState;
     public static Server Server;
 
     public Branch(String title, int width, int height) {
@@ -34,6 +36,7 @@ public class Branch implements Runnable {
         GUI.init();
         DataState = new DataState(handler);
         EditCustomer = new EditCustomer(handler);
+        ConnectState = new ConnectState(handler);
         handler.switchToState(DataState);
         Server = new Server();
     }
