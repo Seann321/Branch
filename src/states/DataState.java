@@ -54,17 +54,7 @@ public class DataState extends States implements Serializable {
         gui = new GUI(handler);
         background = new Background(handler);
         Server = new Server();
-        FileInputStream fis = null;
-        ObjectInputStream in = null;
-        try {
-            fis = new FileInputStream("MyData.ser");
-            in = new ObjectInputStream(fis);
-            Customers = (ArrayList) in.readObject();
-            in.close();
-            fis.close();
-        } catch (Exception ex) {
-            System.out.println("No Customers Found");
-        }
+        updateFromData();
 
 
         for (UIObject u : guiStuff) {
@@ -78,6 +68,23 @@ public class DataState extends States implements Serializable {
         lookUp.setAllColors(Color.WHITE);
         enterNew.setAllColors(Color.WHITE);
         currentInput.setAllColors(Color.WHITE);
+    }
+
+    private void updateFromData(){
+        FileInputStream fis = null;
+        ObjectInputStream in = null;
+        try {
+            fis = new FileInputStream("MyData.ser");
+            in = new ObjectInputStream(fis);
+            NameMatches.clear();
+            offset = 0;
+            Customers.clear();
+            Customers = (ArrayList) in.readObject();
+            in.close();
+            fis.close();
+        } catch (Exception ex) {
+            System.out.println("No Customers Found");
+        }
     }
 
     public static void SaveArray() {
@@ -119,6 +126,7 @@ public class DataState extends States implements Serializable {
         if (lookUp.wasClicked()) {
             if (!ConnectState.connectIP.equals("")) {
                 client.downloadFile();
+                updateFromData();
             }
             lookupMode = true;
             enterNew.active = false;
@@ -139,6 +147,11 @@ public class DataState extends States implements Serializable {
     private void setServerDetails() {
         if (Server.runServer) {
             serverDetails.setText("SERVER RUNNING AT " + Server.getIPAddress());
+            serverDetails.setAllColors(Color.WHITE);
+            return;
+        }
+        if(!Server.runServer && !ConnectState.connectIP.equals("")){
+            serverDetails.setText("CLIENT CONNECT AT " + ConnectState.connectIP);
             serverDetails.setAllColors(Color.WHITE);
             return;
         }

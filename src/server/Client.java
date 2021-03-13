@@ -14,7 +14,7 @@ public class Client {
     int current = 0;
 
     public void downloadFile() {
-        try (Socket socket = new Socket(ConnectState.connectIP, Server.PORT)) {
+        try (Socket socket = new Socket("192.168.0.11", Server.PORT)) {
 
             byte[] mybytearray = new byte[filesize];
             InputStream is = socket.getInputStream();

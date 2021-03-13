@@ -40,6 +40,7 @@ public class ConnectState extends States {
             input = input.substring(0, input.length() - 1);
             connectIP = input;
             KeyManager.LockInput = true;
+            handler.switchToState(Branch.DataState);
         }
         if(handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE)){
             input = input.substring(0, input.length() - 1);
