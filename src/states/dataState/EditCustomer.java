@@ -4,6 +4,7 @@ import branch.Branch;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
+import org.graalvm.compiler.lir.LIRInstruction;
 import states.ConnectState;
 import states.DataState;
 import states.Handler;
@@ -12,13 +13,14 @@ import states.States;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.Serializable;
+import java.io.*;
 import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
+import static states.DataState.CurrentCustomer;
 import static states.DataState.client;
 
 public class EditCustomer extends States implements Serializable {
@@ -147,9 +149,38 @@ public class EditCustomer extends States implements Serializable {
         editText();
         if (handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE) && KeyManager.LockInput) {
             DataState.SaveArray();
+            pushUpdate();
             handler.switchToState(Branch.DataState);
-            if (!ConnectState.connectIP.equals(""))
-                client.uploadFile();
+        }
+    }
+
+    private void pushUpdate() {
+        if (!ConnectState.connectIP.equals("")) {
+            SaveArray();
+            TempCustomersToAdd.add(CurrentCustomer);
+            client.uploadFile();
+            TempCustomersToAdd.clear();
+        }
+    }
+
+    static ArrayList<Customer> TempCustomersToAdd = new ArrayList<>();
+
+    public static void SaveArray() {
+        try {
+            // Serialize data object to a file
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("ToAdd.ser"));
+            out.writeObject(TempCustomersToAdd);
+            out.close();
+
+            // Serialize data object to a byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            out = new ObjectOutputStream(bos);
+            out.writeObject(TempCustomersToAdd);
+            out.close();
+
+            // Get the bytes of the serialized object
+            byte[] buf = bos.toByteArray();
+        } catch (IOException e) {
         }
     }
 
@@ -164,6 +195,7 @@ public class EditCustomer extends States implements Serializable {
             DataState.NameMatches.remove(DataState.CurrentCustomer);
             handler.switchToState(Branch.DataState);
             DataState.SaveArray();
+            pushUpdate();
         }
     }
 
@@ -183,14 +215,14 @@ public class EditCustomer extends States implements Serializable {
         activeUIObject.setText(input);
         boolean clickEnter = false;
         UIObject clicked = null;
-        for(UIObject u : guiStuff){
-            if(u.wasClicked()){
+        for (UIObject u : guiStuff) {
+            if (u.wasClicked()) {
                 clickEnter = true;
                 clicked = u;
             }
         }
-        for(UIObject u : mediaAmountGUI){
-            if(u.wasClicked()){
+        for (UIObject u : mediaAmountGUI) {
+            if (u.wasClicked()) {
                 clickEnter = true;
             }
         }
@@ -203,13 +235,13 @@ public class EditCustomer extends States implements Serializable {
             for (UIObject u : guiStuff) {
                 u.clicked = false;
             }
-            if(clicked !=null){
+            if (clicked != null) {
                 setActiveUIObject(clicked);
             }
         }
     }
 
-    void setActiveUIObject(UIObject u){
+    void setActiveUIObject(UIObject u) {
         input = u.getText();
         activeUIObject = u;
         u.setAllColors(Color.ORANGE);

@@ -3,6 +3,7 @@ package server;
 import branch.Main;
 import states.DataState;
 import states.dataState.Customer;
+import states.dataState.EditCustomer;
 
 import java.io.*;
 import java.net.*;
@@ -48,25 +49,21 @@ public class Server implements Runnable {
     }
 
     private void downloadData() throws IOException {
-        ftp.receiveFile("Temp/MyData.ser");
+        ftp.receiveFile("ToAdd.ser");
         mergeData();
         DataState.SaveArray();
     }
 
     private void mergeData() {
         updateFromData();
-        for (Customer t : TempCustomers) {
-            if(!DataState.Customers.contains(t)){
-                DataState.Customers.add(t);
-            }
-        }
+        DataState.Customers.addAll(TempCustomers);
     }
 
     private void updateFromData() {
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
-            fis = new FileInputStream("Temp/MyData.ser");
+            fis = new FileInputStream("ToAdd.ser");
             in = new ObjectInputStream(fis);
             TempCustomers.clear();
             TempCustomers = (ArrayList) in.readObject();
