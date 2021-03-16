@@ -22,7 +22,6 @@ public class Server implements Runnable {
     Socket socket;
     FileTransferProcessor ftp;
     File myFile = new File("MyData.ser");
-    static ArrayList<Customer> TempCustomers = new ArrayList<>();
 
 
     public Server() {
@@ -50,30 +49,10 @@ public class Server implements Runnable {
 
     private void downloadData() throws IOException {
         ftp.receiveFile("MyData.ser");
-        mergeData();
         DataState.SaveArray();
     }
 
-    private void mergeData() {
-        updateFromData();
-        DataState.Customers = TempCustomers;
-    }
 
-    private void updateFromData() {
-        FileInputStream fis = null;
-        ObjectInputStream in = null;
-        try {
-            fis = new FileInputStream("MyData.ser");
-            in = new ObjectInputStream(fis);
-            TempCustomers.clear();
-            TempCustomers = (ArrayList) in.readObject();
-            System.out.println(TempCustomers.size());
-            in.close();
-            fis.close();
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
 
     private void init() {
         try {
