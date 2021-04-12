@@ -21,7 +21,7 @@ public class Server implements Runnable {
     ServerSocket serverSocket;
     Socket socket;
     FileTransferProcessor ftp;
-    File myFile = new File("MyData.ser");
+    File myFile = new File("CustomerData.ser");
 
 
     public Server() {
@@ -48,8 +48,8 @@ public class Server implements Runnable {
     }
 
     private void downloadData() throws IOException {
-        ftp.receiveFile("MyData.ser");
-        DataState.SaveArray();
+        ftp.receiveFile("CustomerData.ser");
+        DataState.UpdateFromData();
     }
 
 

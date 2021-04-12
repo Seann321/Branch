@@ -57,7 +57,7 @@ public class DataState extends States implements Serializable {
         gui = new GUI(handler);
         background = new Background(handler);
         Server = new Server();
-        updateFromData();
+        UpdateFromData();
 
 
         for (UIObject u : guiStuff) {
@@ -73,14 +73,14 @@ public class DataState extends States implements Serializable {
         currentInput.setAllColors(Color.WHITE);
     }
 
-    private void updateFromData() {
+    public static void UpdateFromData() {
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
             fis = new FileInputStream("MyData.ser");
             in = new ObjectInputStream(fis);
             NameMatches.clear();
-            offset = 0;
+            Offset = 0;
             OldCustomers.clear();
             OldCustomers = (ArrayList) in.readObject();
             updateCustomers();
@@ -94,7 +94,7 @@ public class DataState extends States implements Serializable {
                 fis = new FileInputStream("CustomerData.ser");
                 in = new ObjectInputStream(fis);
                 NameMatches.clear();
-                offset = 0;
+                Offset = 0;
                 Customers.clear();
                 Customers = (ArrayList) in.readObject();
                 in.close();
@@ -105,7 +105,7 @@ public class DataState extends States implements Serializable {
         }
     }
 
-    private void renameFile() throws IOException {
+    private static void renameFile() throws IOException {
         File file = new File("MyData.ser");
 
         File file2 = new File("OldData.ser");
@@ -121,7 +121,7 @@ public class DataState extends States implements Serializable {
     }
 
 
-    private void updateCustomers() {
+    private static void updateCustomers() {
         for (Customer old : OldCustomers) {
             CustomerUpdated temp = new CustomerUpdated("TEMP");
             temp.setPhone(old.getPhone());
@@ -175,7 +175,7 @@ public class DataState extends States implements Serializable {
             if (!ConnectState.connectIP.equals("")) {
                 client.downloadFile();
             }
-            updateFromData();
+            UpdateFromData();
             lookupMode = true;
             enterNew.active = false;
             lookUp.setText("SEARCH BY NAME OR PHONE");
@@ -190,7 +190,7 @@ public class DataState extends States implements Serializable {
 
     public static ArrayList<CustomerUpdated> NameMatches = new ArrayList<>();
 
-    int offset = 0;
+    static int Offset = 0;
 
     private void setServerDetails() {
         if (Server.runServer) {
@@ -229,15 +229,15 @@ public class DataState extends States implements Serializable {
         }
         int i = 0;
         if (handler.getKM().keyJustPressed(KeyEvent.VK_DOWN) || handler.getMM().isWheelDown()) {
-            offset += 1;
-            if (10 + offset > NameMatches.size()) {
-                offset -= 1;
+            Offset += 1;
+            if (10 + Offset > NameMatches.size()) {
+                Offset -= 1;
             }
         }
         if (handler.getKM().keyJustPressed(KeyEvent.VK_UP) || handler.getMM().isWheelUp()) {
-            offset -= 1;
-            if (offset < 0) {
-                offset = 0;
+            Offset -= 1;
+            if (Offset < 0) {
+                Offset = 0;
             }
         }
 
@@ -246,8 +246,8 @@ public class DataState extends States implements Serializable {
                 if (i >= 10) {
                     break;
                 }
-                activeSearch.get(i).setText(NameMatches.get(i + offset).getName() + "   " + NameMatches.get(i + offset).getPhone() + "   Date Made: " + NameMatches.get(i + offset).getDate());
-                if (NameMatches.get(i + offset).completed) {
+                activeSearch.get(i).setText(NameMatches.get(i + Offset).getName() + "   " + NameMatches.get(i + Offset).getPhone() + "   Date Made: " + NameMatches.get(i + Offset).getDate());
+                if (NameMatches.get(i + Offset).completed) {
                     activeSearch.get(i).setColor(Color.green);
                 } else {
                     activeSearch.get(i).setColor(Color.white);
@@ -298,13 +298,13 @@ public class DataState extends States implements Serializable {
                     } else {
                         if (NameMatches.contains(c)) {
                             NameMatches.remove(c);
-                            offset = 0;
+                            Offset = 0;
                         }
                     }
                     if (c.completed && !showComplete) {
                         if (NameMatches.contains(c)) {
                             NameMatches.remove(c);
-                            offset = 0;
+                            Offset = 0;
                         }
                     }
                 }
@@ -327,7 +327,7 @@ public class DataState extends States implements Serializable {
 
     @Override
     public void reset() {
-        offset = 0;
+        Offset = 0;
         enterNew.resetColors();
         lookUp.resetColors();
         enterNew.active = true;
