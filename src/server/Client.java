@@ -3,6 +3,7 @@ package server;
 import states.ConnectState;
 import states.DataState;
 import states.dataState.Customer;
+import states.dataState.CustomerUpdated;
 
 import javax.xml.crypto.Data;
 import java.io.*;
@@ -14,7 +15,7 @@ public class Client {
 
     FileTransferProcessor ftp;
     File myFile = new File("CustomerData.ser");
-    static ArrayList<Customer> TempCustomers = new ArrayList<>();
+    static ArrayList<CustomerUpdated> TempCustomers = new ArrayList<>();
 
 
     public void downloadFile() {
@@ -43,6 +44,15 @@ public class Client {
 
     private void mergeData() {
         updateFromData();
+        for(CustomerUpdated c : TempCustomers){
+            if(c.ID.equals(DataState.CurrentCustomer.ID)){
+                c = DataState.CurrentCustomer;
+            }else{
+                TempCustomers.remove(c);
+            }
+        }
+        DataState.Customers = TempCustomers;
+        DataState.SaveArray();
     }
 
     private void updateFromData() {
