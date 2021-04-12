@@ -8,6 +8,8 @@ import server.Client;
 import server.Server;
 import states.dataState.Background;
 import states.dataState.Customer;
+import states.dataState.CustomerUpdated;
+import states.dataState.EditCustomer;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -42,8 +44,9 @@ public class DataState extends States implements Serializable {
     UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20 - GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
     UIObject serverDetails = new UIObject("Connect To Server", 0, GUI.font.getSize(), false, Color.white, Color.ORANGE, GUI.font, guiStuff);
 
-    public static ArrayList<Customer> Customers = new ArrayList<>();
-    public static Customer CurrentCustomer = new Customer("DUMMY");
+    public static ArrayList<Customer> OldCustomers = new ArrayList<>();
+    public static ArrayList<CustomerUpdated> Customers = new ArrayList<>();
+    public static CustomerUpdated CurrentCustomer = new CustomerUpdated("DUMMY");
     private String input = "";
     boolean lookupMode = false;
     boolean showComplete = true;
@@ -78,19 +81,64 @@ public class DataState extends States implements Serializable {
             in = new ObjectInputStream(fis);
             NameMatches.clear();
             offset = 0;
-            Customers.clear();
-            Customers = (ArrayList) in.readObject();
+            OldCustomers.clear();
+            OldCustomers = (ArrayList) in.readObject();
+            updateCustomers();
             in.close();
             fis.close();
+            renameFile();
+            SaveArray();
         } catch (Exception ex) {
-            System.out.println("No Customers Found");
+            System.out.println("MyData.ser not found. Trying CustomerData");
+            try {
+                fis = new FileInputStream("CustomerData.ser");
+                in = new ObjectInputStream(fis);
+                NameMatches.clear();
+                offset = 0;
+                Customers.clear();
+                Customers = (ArrayList) in.readObject();
+                in.close();
+                fis.close();
+            } catch (Exception exc) {
+                System.out.println("CustomerData.ser not found.");
+            }
         }
     }
+
+    private void renameFile() throws IOException {
+        File file = new File("MyData.ser");
+
+        File file2 = new File("OldData.ser");
+
+        if (file2.exists())
+            throw new java.io.IOException("file exists");
+
+        boolean success = file.renameTo(file2);
+
+        if (!success) {
+            System.out.println("File was not successfully renamed");
+        }
+    }
+
+
+    private void updateCustomers() {
+        for (Customer old : OldCustomers) {
+            CustomerUpdated temp = new CustomerUpdated("TEMP");
+            temp.setPhone(old.getPhone());
+            temp.setEmail(old.getEmail());
+            temp.setAddress(old.getAddress());
+            temp.setName(old.getName());
+            EditCustomer.changeData(temp, old);
+            temp.completed = old.completed;
+            Customers.add(temp);
+        }
+    }
+
 
     public static void SaveArray() {
         try {
             // Serialize data object to a file
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("MyData.ser"));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("CustomerData.ser"));
             out.writeObject(Customers);
             out.close();
 
@@ -140,7 +188,7 @@ public class DataState extends States implements Serializable {
         getKeyInput();
     }
 
-    public static ArrayList<Customer> NameMatches = new ArrayList<>();
+    public static ArrayList<CustomerUpdated> NameMatches = new ArrayList<>();
 
     int offset = 0;
 
@@ -194,7 +242,7 @@ public class DataState extends States implements Serializable {
         }
 
         {
-            for (Customer c : NameMatches) {
+            for (CustomerUpdated c : NameMatches) {
                 if (i >= 10) {
                     break;
                 }
@@ -211,7 +259,7 @@ public class DataState extends States implements Serializable {
             }
             for (UIObject o : activeSearch) {
                 if (o.wasClicked()) {
-                    for (Customer c : Customers) {
+                    for (CustomerUpdated c : Customers) {
                         if (o.getText().equals(c.getName() + "   " + c.getPhone() + "   Date Made: " + c.getDate())) {
                             CurrentCustomer = c;
                             reset();
@@ -237,7 +285,7 @@ public class DataState extends States implements Serializable {
                     u.active = true;
                 }
 
-                for (Customer c : Customers) {
+                for (CustomerUpdated c : Customers) {
                     String namePhoneInfo = c.getName() + c.getPhone();
                     if (namePhoneInfo.contains(input)) {
                         if (!NameMatches.contains(c)) {
@@ -305,7 +353,7 @@ public class DataState extends States implements Serializable {
         if (input.equals("")) {
             input = "DUMMY";
         }
-        CurrentCustomer = new Customer(input);
+        CurrentCustomer = new CustomerUpdated(input);
         Customers.add(CurrentCustomer);
         input = "";
         currentInput.setText(input);

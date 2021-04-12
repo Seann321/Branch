@@ -4,6 +4,7 @@ import states.ConnectState;
 import states.DataState;
 import states.dataState.Customer;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 public class Client {
 
     FileTransferProcessor ftp;
-    File myFile = new File("MyData.ser");
+    File myFile = new File("CustomerData.ser");
     static ArrayList<Customer> TempCustomers = new ArrayList<>();
 
 
@@ -21,7 +22,7 @@ public class Client {
             PrintWriter pr = new PrintWriter(socket.getOutputStream(), true);
             pr.println("DOWNLOAD");
             ftp = new FileTransferProcessor(socket);
-            ftp.receiveFile("MyData.ser");
+            ftp.receiveFile("CustomerData.ser");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -34,6 +35,7 @@ public class Client {
             pr.println("UPLOAD");
             ftp = new FileTransferProcessor(socket);
             ftp.sendFile(myFile);
+            System.out.println("File Sent");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,21 +43,18 @@ public class Client {
 
     private void mergeData() {
         updateFromData();
-        if(TempCustomers.contains(DataState.CurrentCustomer)){
-            System.out.println(DataState.CurrentCustomer.getName());
-        }
-        DataState.Customers = TempCustomers;
     }
 
     private void updateFromData() {
+        downloadFile();
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
-            fis = new FileInputStream("MyData.ser");
+            fis = new FileInputStream("CustomerData.ser");
             in = new ObjectInputStream(fis);
             TempCustomers.clear();
             TempCustomers = (ArrayList) in.readObject();
-            System.out.println(TempCustomers.size());
+            //System.out.println(TempCustomers.size());
             in.close();
             fis.close();
         } catch (Exception ex) {
