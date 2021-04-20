@@ -89,7 +89,7 @@ public class DataState extends States implements Serializable {
             renameFile();
             SaveArray();
         } catch (Exception ex) {
-            System.out.println("MyData.ser not found. Trying CustomerData");
+            //System.out.println("MyData.ser not found. Trying CustomerData");
             try {
                 fis = new FileInputStream("CustomerData.ser");
                 in = new ObjectInputStream(fis);
@@ -100,7 +100,7 @@ public class DataState extends States implements Serializable {
                 in.close();
                 fis.close();
             } catch (Exception exc) {
-                System.out.println("CustomerData.ser not found.");
+                //System.out.println("CustomerData.ser not found.");
             }
         }
     }

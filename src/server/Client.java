@@ -43,42 +43,23 @@ public class Client {
     }
 
     private void mergeData() {
-        updateFromData();
-        CustomerUpdated tempCustomer = null;
-        for(CustomerUpdated c : TempCustomers){
-            if(c.ID.equals(DataState.CurrentCustomer.ID)) {
-                tempCustomer = c;
+        downloadFile();
+        DataState.SaveArray();
+        CustomerUpdated customerUpdated = null;
+        for(CustomerUpdated c : DataState.Customers){
+            if(c.ID.equals(DataState.CurrentCustomer.ID)){
+                customerUpdated = DataState.CurrentCustomer;
             }
         }
-        if(tempCustomer == null){
-            tempCustomer = DataState.CurrentCustomer;
-            TempCustomers.add(tempCustomer);
-        }else if(tempCustomer.toBeDeleted){
-            TempCustomers.remove(tempCustomer);
+        if(customerUpdated == null){
+            DataState.Customers.add(DataState.CurrentCustomer);
+        }else if(customerUpdated.toBeDeleted){
+            DataState.Customers.remove(customerUpdated);
         }else{
-            tempCustomer = DataState.CurrentCustomer;
+
         }
-        DataState.Customers = TempCustomers;
         DataState.SaveArray();
     }
-
-    private void updateFromData() {
-        downloadFile();
-        FileInputStream fis = null;
-        ObjectInputStream in = null;
-        try {
-            fis = new FileInputStream("CustomerData.ser");
-            in = new ObjectInputStream(fis);
-            TempCustomers.clear();
-            TempCustomers = (ArrayList) in.readObject();
-            //System.out.println(TempCustomers.size());
-            in.close();
-            fis.close();
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
 }
 
 
