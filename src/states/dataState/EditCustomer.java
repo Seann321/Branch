@@ -171,8 +171,12 @@ public class EditCustomer extends States implements Serializable {
             DataState.NameMatches.remove(DataState.CurrentCustomer);
             CurrentCustomer.toBeDeleted = true;
             handler.switchToState(Branch.DataState);
-            DataState.SaveArray();
-            pushUpdate();
+            if (!ConnectState.connectIP.equals("")) {
+                client.uploadFile();
+            } else {
+                DataState.SaveArray();
+
+            }
         }
     }
 

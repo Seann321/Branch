@@ -36,7 +36,7 @@ public class Client {
             pr.println("UPLOAD");
             ftp = new FileTransferProcessor(socket);
             ftp.sendFile(myFile);
-            System.out.println("File Sent");
+            //System.out.println("File Sent");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,10 +53,6 @@ public class Client {
         }
         if(customerUpdated == null){
             DataState.Customers.add(DataState.CurrentCustomer);
-        }else if(customerUpdated.toBeDeleted){
-            DataState.Customers.remove(customerUpdated);
-        }else{
-
         }
         DataState.SaveArray();
     }

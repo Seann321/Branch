@@ -159,6 +159,10 @@ public class DataState extends States implements Serializable {
         gui.tick();
         background.tick();
         setServerDetails();
+        if(CurrentCustomer.toBeDeleted){
+            Customers.remove(CurrentCustomer);
+            NameMatches.remove(CurrentCustomer);
+        }
         if (enterOptions.wasClicked()) {
             handler.switchToState(Branch.DataOptionsScreen);
         }
