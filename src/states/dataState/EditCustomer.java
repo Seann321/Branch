@@ -169,6 +169,7 @@ public class EditCustomer extends States implements Serializable {
             deleteConfirm = true;
             DataState.Customers.remove(DataState.CurrentCustomer);
             DataState.NameMatches.remove(DataState.CurrentCustomer);
+            CurrentCustomer.toBeDeleted = true;
             handler.switchToState(Branch.DataState);
             DataState.SaveArray();
             pushUpdate();
@@ -272,26 +273,26 @@ public class EditCustomer extends States implements Serializable {
         newC.notes[2] = oldC.notes[2];
         newC.notes[3] = oldC.notes[3];
         newC.notes[4] = oldC.notes[4];
-        newC.setMediaAmount(oldC.getMediaAmount("VHS"),"VHS");
-        newC.setMediaAmount(oldC.getMediaAmount("VHS-C"),"VHS-C");
-        newC.setMediaAmount(oldC.getMediaAmount("8MM"),"8MM");
-        newC.setMediaAmount(oldC.getMediaAmount("6MM"),"6MM");
-        newC.setMediaAmount(oldC.getMediaAmount("BETA/CAM"),"BETA/CAM");
-        newC.setMediaAmount(oldC.getMediaAmount("UMATIC"),"UMATIC");
-        newC.setMediaAmount(oldC.getMediaAmount("LP"),"LP");
-        newC.setMediaAmount(oldC.getMediaAmount("CASSETTE"),"CASSETTE");
-        newC.setMediaAmount(oldC.getMediaAmount("REEL"),"REEL");
-        newC.setMediaAmount(oldC.getMediaAmount("PHOTOS"),"PHOTOS");
-        newC.setMediaAmount(oldC.getMediaAmount("ALBUM"),"ALBUM");
-        newC.setMediaAmount(oldC.getMediaAmount("SLIDES"),"SLIDES");
-        newC.setMediaAmount(oldC.getMediaAmount("NEG"),"NEG");
-        newC.setMediaAmount(oldC.getMediaAmount("FILM_8MM"),"FILM_8MM");
-        newC.setMediaAmount(oldC.getMediaAmount("FILM_16MM"),"FILM_16MM");
-        newC.setMediaAmount(oldC.getMediaAmount("DVD"),"DVD");
-        newC.setMediaAmount(oldC.getMediaAmount("FD"),"FD");
-        newC.setMediaAmount(oldC.getMediaAmount("SD"),"SD");
-        newC.setMediaAmount(oldC.getMediaAmount("HD"),"HD");
-        newC.setMediaAmount(oldC.getMediaAmount("PHOTOBOX"),"PHOTOBOX");
+        newC.setMediaAmount(oldC.getMediaAmount("VHS"), "VHS");
+        newC.setMediaAmount(oldC.getMediaAmount("VHS-C"), "VHS-C");
+        newC.setMediaAmount(oldC.getMediaAmount("8MM"), "8MM");
+        newC.setMediaAmount(oldC.getMediaAmount("6MM"), "6MM");
+        newC.setMediaAmount(oldC.getMediaAmount("BETA/CAM"), "BETA/CAM");
+        newC.setMediaAmount(oldC.getMediaAmount("UMATIC"), "UMATIC");
+        newC.setMediaAmount(oldC.getMediaAmount("LP"), "LP");
+        newC.setMediaAmount(oldC.getMediaAmount("CASSETTE"), "CASSETTE");
+        newC.setMediaAmount(oldC.getMediaAmount("REEL"), "REEL");
+        newC.setMediaAmount(oldC.getMediaAmount("PHOTOS"), "PHOTOS");
+        newC.setMediaAmount(oldC.getMediaAmount("ALBUM"), "ALBUM");
+        newC.setMediaAmount(oldC.getMediaAmount("SLIDES"), "SLIDES");
+        newC.setMediaAmount(oldC.getMediaAmount("NEG"), "NEG");
+        newC.setMediaAmount(oldC.getMediaAmount("FILM_8MM"), "FILM_8MM");
+        newC.setMediaAmount(oldC.getMediaAmount("FILM_16MM"), "FILM_16MM");
+        newC.setMediaAmount(oldC.getMediaAmount("DVD"), "DVD");
+        newC.setMediaAmount(oldC.getMediaAmount("FD"), "FD");
+        newC.setMediaAmount(oldC.getMediaAmount("SD"), "SD");
+        newC.setMediaAmount(oldC.getMediaAmount("HD"), "HD");
+        newC.setMediaAmount(oldC.getMediaAmount("PHOTOBOX"), "PHOTOBOX");
     }
 
     private void updateTextInfo() {

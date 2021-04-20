@@ -13,6 +13,7 @@ public class CustomerUpdated implements Serializable {
 
     public String date;
 
+    public boolean toBeDeleted = false;
     public boolean completed = false;
     public Double ID;
     public String name, email, address, phone;
