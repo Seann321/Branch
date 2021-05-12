@@ -253,7 +253,10 @@ public class DataState extends States implements Serializable {
                 activeSearch.get(i).setText(NameMatches.get(i + Offset).getName() + "   " + NameMatches.get(i + Offset).getPhone() + "   Date Made: " + NameMatches.get(i + Offset).getDate());
                 if (NameMatches.get(i + Offset).completed) {
                     activeSearch.get(i).setColor(Color.green);
-                } else {
+                }else if(NameMatches.get(i + Offset).inprogress){
+                    activeSearch.get(i).setColor(Color.yellow);
+                }
+                else {
                     activeSearch.get(i).setColor(Color.white);
                 }
                 i++;

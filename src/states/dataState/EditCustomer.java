@@ -99,6 +99,7 @@ public class EditCustomer extends States implements Serializable {
         }
     }
 
+    private int complete = 0;
 
     @Override
     public void tick() {
@@ -107,13 +108,26 @@ public class EditCustomer extends States implements Serializable {
         gui.tick();
         deleteCustomer();
         if (progress.wasClicked()) {
-            DataState.CurrentCustomer.completed = !DataState.CurrentCustomer.completed;
+            complete++;
+            if(complete == 3)
+                complete= 0;
+            if(complete == 0){
+                CurrentCustomer.completed = false;
+            }else if(complete == 1){
+                CurrentCustomer.inprogress = true;
+            }else if(complete == 2){
+                CurrentCustomer.inprogress = false;
+                CurrentCustomer.completed = true;
+            }
         }
-        if (DataState.CurrentCustomer.completed) {
+        if (complete == 2) {
             progress.setAllColors(Color.green);
             progress.setText("Completed");
-        } else {
+        } else if(complete == 1){
             progress.setAllColors(Color.yellow);
+            progress.setText("Billed out");
+        }else{
+            progress.setAllColors(Color.white);
             progress.setText("In Progress");
         }
         if (activeUIObject == null) {
@@ -332,6 +346,13 @@ public class EditCustomer extends States implements Serializable {
     public void reset() {
         deleteConfirm = false;
         delete.setText("DELETE");
+        if(CurrentCustomer.completed){
+            complete = 2;
+        }else if(CurrentCustomer.inprogress){
+            complete = 1;
+        }else {
+            complete = 0;
+        }
     }
 
     @Override

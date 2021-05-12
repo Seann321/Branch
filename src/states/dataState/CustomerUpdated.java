@@ -15,6 +15,7 @@ public class CustomerUpdated implements Serializable {
 
     public boolean toBeDeleted = false;
     public boolean completed = false;
+    public boolean inprogress = false;
     public Double ID;
     public String name, email, address, phone;
     public String[] notes = new String[]{
