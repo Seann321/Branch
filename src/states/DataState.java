@@ -160,9 +160,22 @@ public class DataState extends States implements Serializable {
         background.tick();
         setServerDetails();
         if(CurrentCustomer.toBeDeleted){
-            Customers.remove(CurrentCustomer);
-            NameMatches.remove(CurrentCustomer);
+            if(ConnectState.connectIP.equals("")){
+                Customers.remove(CurrentCustomer);
+                NameMatches.remove(CurrentCustomer);
+            }
         }
+        ArrayList<CustomerUpdated> customerDelete = new ArrayList<>();
+        for(CustomerUpdated c : Customers){
+            if(c.toBeDeleted){
+                customerDelete.add(c);
+            }
+        }
+        for(CustomerUpdated c : customerDelete){
+            Customers.remove(c);
+            NameMatches.remove(c);
+        }
+        customerDelete.clear();
         if (enterOptions.wasClicked()) {
             handler.switchToState(Branch.DataOptionsScreen);
         }
