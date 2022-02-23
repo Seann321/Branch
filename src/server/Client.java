@@ -30,15 +30,17 @@ public class Client {
     }
 
     public void uploadFile() {
-        mergeData();
-        try (Socket socket = new Socket(ConnectState.connectIP, Server.PORT)) {
-            PrintWriter pr = new PrintWriter(socket.getOutputStream(), true);
-            pr.println("UPLOAD");
-            ftp = new FileTransferProcessor(socket);
-            ftp.sendFile(myFile);
-            //System.out.println("File Sent");
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int i = 0; i < 5; i++) {
+            mergeData();
+            try (Socket socket = new Socket(ConnectState.connectIP, Server.PORT)) {
+                PrintWriter pr = new PrintWriter(socket.getOutputStream(), true);
+                pr.println("UPLOAD");
+                ftp = new FileTransferProcessor(socket);
+                ftp.sendFile(myFile);
+                //System.out.println("File Sent");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -47,17 +49,17 @@ public class Client {
         DataState.UpdateFromData();
         CustomerUpdated customerUpdated = null;
         CustomerUpdated cTemp = null;
-        for(CustomerUpdated c : DataState.Customers){
-            if(c.ID.equals(DataState.CurrentCustomer.ID)){
+        for (CustomerUpdated c : DataState.Customers) {
+            if (c.ID.equals(DataState.CurrentCustomer.ID)) {
                 customerUpdated = DataState.CurrentCustomer;
                 cTemp = c;
             }
         }
-        if(cTemp != null){
+        if (cTemp != null) {
             DataState.Customers.remove(cTemp);
             DataState.Customers.add(DataState.CurrentCustomer);
         }
-        if(customerUpdated == null){
+        if (customerUpdated == null) {
             DataState.Customers.add(DataState.CurrentCustomer);
         }
         DataState.SaveArray();

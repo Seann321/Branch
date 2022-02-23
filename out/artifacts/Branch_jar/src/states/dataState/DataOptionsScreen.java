@@ -4,6 +4,8 @@ import branch.Branch;
 import branch.Display;
 import gfx.GUI;
 import gfx.UIObject;
+import server.Server;
+import states.DataState;
 import states.Handler;
 import states.States;
 
@@ -21,7 +23,8 @@ public class DataOptionsScreen extends States implements Serializable {
     Background background;
     UIObject dotsToggle = new UIObject("TOGGLE BACKGROUND DOTS", Branch.WIDTH/2, Branch.HEIGHT/4, true, Color.white, Color.orange, GUI.font50, guiStuff);
     UIObject backgroundToggle = new UIObject("TOGGLE BACKGROUND COLOR", Branch.WIDTH/2, Branch.HEIGHT/4 + GUI.font50.getSize(), true, Color.white, Color.orange, GUI.font50, guiStuff);
-    UIObject returnToMenu = new UIObject("RETURN TO MENU", Branch.WIDTH/2, Branch.HEIGHT/4 + (GUI.font50.getSize() * 3), true, Color.white, Color.orange, GUI.font50, guiStuff);
+    UIObject startServer = new UIObject("START SERVER", Branch.WIDTH/2, Branch.HEIGHT/4 + (GUI.font50.getSize() * 2), true, Color.white, Color.orange, GUI.font50, guiStuff);
+    UIObject returnToMenu = new UIObject("RETURN TO MENU", Branch.WIDTH/2, Branch.HEIGHT/4 + (GUI.font50.getSize() * 4), true, Color.white, Color.orange, GUI.font50, guiStuff);
 
     public DataOptionsScreen(Handler handler) {
         super(handler);
@@ -59,6 +62,14 @@ public class DataOptionsScreen extends States implements Serializable {
     public void tick() {
         gui.tick();
         background.tick();
+        if(startServer.wasClicked()){
+            if(Server.runServer){
+                return;
+            }
+            startServer.setText("SERVER STARTED");
+            Server.runServer = true;
+            DataState.Server.start();
+        }
         if(dotsToggle.wasClicked()){
             Settings[0] = !Settings[0];
         }

@@ -57,6 +57,9 @@ public class Server implements Runnable {
         DataState.UpdateFromData();
         CustomerUpdated customerUpdated = null;
 
+        if(DataState.Customers.isEmpty()){
+
+        }
         for (CustomerUpdated c : DataState.Customers) {
             if (c.ID.equals(DataState.CurrentCustomer.ID)) {
                 customerUpdated = DataState.CurrentCustomer;

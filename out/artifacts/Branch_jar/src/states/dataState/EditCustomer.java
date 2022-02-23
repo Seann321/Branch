@@ -4,6 +4,7 @@ import branch.Branch;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
+import states.ConnectState;
 import states.DataState;
 import states.Handler;
 import states.States;
@@ -11,12 +12,15 @@ import states.States;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.Serializable;
+import java.io.*;
 import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+
+import static states.DataState.CurrentCustomer;
+import static states.DataState.client;
 
 public class EditCustomer extends States implements Serializable {
 
@@ -95,6 +99,7 @@ public class EditCustomer extends States implements Serializable {
         }
     }
 
+    private int complete = 0;
 
     @Override
     public void tick() {
@@ -103,13 +108,26 @@ public class EditCustomer extends States implements Serializable {
         gui.tick();
         deleteCustomer();
         if (progress.wasClicked()) {
-            DataState.CurrentCustomer.completed = !DataState.CurrentCustomer.completed;
+            complete++;
+            if(complete == 3)
+                complete= 0;
+            if(complete == 0){
+                CurrentCustomer.completed = false;
+            }else if(complete == 1){
+                CurrentCustomer.inprogress = true;
+            }else if(complete == 2){
+                CurrentCustomer.inprogress = false;
+                CurrentCustomer.completed = true;
+            }
         }
-        if (DataState.CurrentCustomer.completed) {
+        if (complete == 2) {
             progress.setAllColors(Color.green);
             progress.setText("Completed");
-        } else {
+        } else if(complete == 1){
             progress.setAllColors(Color.yellow);
+            progress.setText("Billed out");
+        }else{
+            progress.setAllColors(Color.white);
             progress.setText("In Progress");
         }
         if (activeUIObject == null) {
@@ -144,9 +162,17 @@ public class EditCustomer extends States implements Serializable {
         editText();
         if (handler.getKM().keyJustPressed(KeyEvent.VK_ESCAPE) && KeyManager.LockInput) {
             DataState.SaveArray();
+            pushUpdate();
             handler.switchToState(Branch.DataState);
         }
     }
+
+    private void pushUpdate() {
+        if (!ConnectState.connectIP.equals("")) {
+            client.uploadFile();
+        }
+    }
+
 
     private void deleteCustomer() {
         if (!deleteConfirm && delete.wasClicked()) {
@@ -157,8 +183,14 @@ public class EditCustomer extends States implements Serializable {
             deleteConfirm = true;
             DataState.Customers.remove(DataState.CurrentCustomer);
             DataState.NameMatches.remove(DataState.CurrentCustomer);
+            CurrentCustomer.toBeDeleted = true;
             handler.switchToState(Branch.DataState);
-            DataState.SaveArray();
+            if (!ConnectState.connectIP.equals("")) {
+                client.uploadFile();
+            } else {
+                DataState.SaveArray();
+
+            }
         }
     }
 
@@ -166,10 +198,7 @@ public class EditCustomer extends States implements Serializable {
         if (activeUIObject == null) {
             for (UIObject u : guiStuff) {
                 if (u.wasClicked()) {
-                    input = u.getText();
-                    activeUIObject = u;
-                    u.setAllColors(Color.ORANGE);
-                    KeyManager.LockInput = false;
+                    setActiveUIObject(u);
                 }
             }
             if (activeUIObject == null) {
@@ -179,7 +208,20 @@ public class EditCustomer extends States implements Serializable {
         activeUIObject.tick();
         getKeyInput();
         activeUIObject.setText(input);
-        if (handler.getKM().keyJustPressed(KeyEvent.VK_ENTER)) {
+        boolean clickEnter = false;
+        UIObject clicked = null;
+        for (UIObject u : guiStuff) {
+            if (u.wasClicked()) {
+                clickEnter = true;
+                clicked = u;
+            }
+        }
+        for (UIObject u : mediaAmountGUI) {
+            if (u.wasClicked()) {
+                clickEnter = true;
+            }
+        }
+        if (handler.getKM().keyJustPressed(KeyEvent.VK_ENTER) || clickEnter) {
             input = "";
             activeUIObject.resetColors();
             KeyManager.LockInput = true;
@@ -188,7 +230,17 @@ public class EditCustomer extends States implements Serializable {
             for (UIObject u : guiStuff) {
                 u.clicked = false;
             }
+            if (clicked != null) {
+                setActiveUIObject(clicked);
+            }
         }
+    }
+
+    void setActiveUIObject(UIObject u) {
+        input = u.getText();
+        activeUIObject = u;
+        u.setAllColors(Color.ORANGE);
+        KeyManager.LockInput = false;
     }
 
     private void updateMediaText() {
@@ -232,6 +284,35 @@ public class EditCustomer extends States implements Serializable {
         DataState.CurrentCustomer.notes[4] = notes5.text;
     }
 
+    public static void changeData(CustomerUpdated newC, Customer oldC) {
+        newC.date = oldC.date;
+        newC.notes[0] = oldC.notes[0];
+        newC.notes[1] = oldC.notes[1];
+        newC.notes[2] = oldC.notes[2];
+        newC.notes[3] = oldC.notes[3];
+        newC.notes[4] = oldC.notes[4];
+        newC.setMediaAmount(oldC.getMediaAmount("VHS"), "VHS");
+        newC.setMediaAmount(oldC.getMediaAmount("VHS-C"), "VHS-C");
+        newC.setMediaAmount(oldC.getMediaAmount("8MM"), "8MM");
+        newC.setMediaAmount(oldC.getMediaAmount("6MM"), "6MM");
+        newC.setMediaAmount(oldC.getMediaAmount("BETA/CAM"), "BETA/CAM");
+        newC.setMediaAmount(oldC.getMediaAmount("UMATIC"), "UMATIC");
+        newC.setMediaAmount(oldC.getMediaAmount("LP"), "LP");
+        newC.setMediaAmount(oldC.getMediaAmount("CASSETTE"), "CASSETTE");
+        newC.setMediaAmount(oldC.getMediaAmount("REEL"), "REEL");
+        newC.setMediaAmount(oldC.getMediaAmount("PHOTOS"), "PHOTOS");
+        newC.setMediaAmount(oldC.getMediaAmount("ALBUM"), "ALBUM");
+        newC.setMediaAmount(oldC.getMediaAmount("SLIDES"), "SLIDES");
+        newC.setMediaAmount(oldC.getMediaAmount("NEG"), "NEG");
+        newC.setMediaAmount(oldC.getMediaAmount("FILM_8MM"), "FILM_8MM");
+        newC.setMediaAmount(oldC.getMediaAmount("FILM_16MM"), "FILM_16MM");
+        newC.setMediaAmount(oldC.getMediaAmount("DVD"), "DVD");
+        newC.setMediaAmount(oldC.getMediaAmount("FD"), "FD");
+        newC.setMediaAmount(oldC.getMediaAmount("SD"), "SD");
+        newC.setMediaAmount(oldC.getMediaAmount("HD"), "HD");
+        newC.setMediaAmount(oldC.getMediaAmount("PHOTOBOX"), "PHOTOBOX");
+    }
+
     private void updateTextInfo() {
         customerName.setText(DataState.CurrentCustomer.getName());
         customerAddress.setText(DataState.CurrentCustomer.getAddress());
@@ -265,6 +346,13 @@ public class EditCustomer extends States implements Serializable {
     public void reset() {
         deleteConfirm = false;
         delete.setText("DELETE");
+        if(CurrentCustomer.completed){
+            complete = 2;
+        }else if(CurrentCustomer.inprogress){
+            complete = 1;
+        }else {
+            complete = 0;
+        }
     }
 
     @Override

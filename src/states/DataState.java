@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DataState extends States implements Serializable {
 
@@ -46,7 +47,7 @@ public class DataState extends States implements Serializable {
     UIObject serverDetails = new UIObject("Connect To Server", 0, GUI.font.getSize(), false, Color.white, Color.ORANGE, GUI.font, guiStuff);
 
     public static ArrayList<Customer> OldCustomers = new ArrayList<>();
-    public static ArrayList<CustomerUpdated> Customers = new ArrayList<>();
+    public static CopyOnWriteArrayList<CustomerUpdated> Customers = new CopyOnWriteArrayList<CustomerUpdated>();
     public static CustomerUpdated CurrentCustomer = new CustomerUpdated("DUMMY");
     private String input = "";
     boolean lookupMode = false;
@@ -97,7 +98,7 @@ public class DataState extends States implements Serializable {
                 NameMatches.clear();
                 Offset = 0;
                 Customers.clear();
-                Customers = (ArrayList) in.readObject();
+                Customers = (CopyOnWriteArrayList<CustomerUpdated>) in.readObject();
                 in.close();
                 fis.close();
             } catch (Exception exc) {
@@ -136,21 +137,21 @@ public class DataState extends States implements Serializable {
     }
 
 
+    static CopyOnWriteArrayList<CustomerUpdated> tempCust = new CopyOnWriteArrayList<CustomerUpdated>();
+
     public static void SaveArray() {
+        tempCust = Customers;
         try {
             // Serialize data object to a file
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("CustomerData.ser"));
-            out.writeObject(Customers);
+            out.writeObject(tempCust);
             out.close();
 
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             out = new ObjectOutputStream(bos);
-            out.writeObject(Customers);
+            out.writeObject(tempCust);
             out.close();
-
-            // Get the bytes of the serialized object
-            byte[] buf = bos.toByteArray();
         } catch (IOException e) {
         }
     }
@@ -160,22 +161,22 @@ public class DataState extends States implements Serializable {
         gui.tick();
         background.tick();
         setServerDetails();
-        if(handler.getKM().keyJustPressed(KeyEvent.VK_BACK_QUOTE)){
+        if (handler.getKM().keyJustPressed(KeyEvent.VK_BACK_QUOTE)) {
             Display.minimize();
         }
-        if(CurrentCustomer.toBeDeleted){
-            if(ConnectState.connectIP.equals("")){
+        if (CurrentCustomer.toBeDeleted) {
+            if (ConnectState.connectIP.equals("")) {
                 Customers.remove(CurrentCustomer);
                 NameMatches.remove(CurrentCustomer);
             }
         }
         ArrayList<CustomerUpdated> customerDelete = new ArrayList<>();
-        for(CustomerUpdated c : Customers){
-            if(c.toBeDeleted){
+        for (CustomerUpdated c : Customers) {
+            if (c.toBeDeleted) {
                 customerDelete.add(c);
             }
         }
-        for(CustomerUpdated c : customerDelete){
+        for (CustomerUpdated c : customerDelete) {
             Customers.remove(c);
             NameMatches.remove(c);
         }
@@ -270,10 +271,9 @@ public class DataState extends States implements Serializable {
                 activeSearch.get(i).setText(NameMatches.get(i + Offset).getName() + "   " + NameMatches.get(i + Offset).getPhone() + "   Date Made: " + NameMatches.get(i + Offset).getDate());
                 if (NameMatches.get(i + Offset).completed) {
                     activeSearch.get(i).setColor(Color.green);
-                }else if(NameMatches.get(i + Offset).inprogress){
+                } else if (NameMatches.get(i + Offset).inprogress) {
                     activeSearch.get(i).setColor(Color.yellow);
-                }
-                else {
+                } else {
                     activeSearch.get(i).setColor(Color.white);
                 }
                 i++;

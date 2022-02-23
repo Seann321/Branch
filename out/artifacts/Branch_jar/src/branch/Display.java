@@ -1,13 +1,11 @@
 package branch;
 
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import javax.swing.JFrame;
 
 public class Display {
 
-    private JFrame frame;
+    private static JFrame frame;
     public static Canvas Canvas;
 
     private final String title;
@@ -18,7 +16,11 @@ public class Display {
         this.width = width;
         this.height = height;
         createDisplay();
-        //setBorderless(true);
+        setBorderless(true);
+    }
+
+    public static void minimize(){
+        frame.setState(Frame.ICONIFIED);
     }
 
     private void createDisplay() {

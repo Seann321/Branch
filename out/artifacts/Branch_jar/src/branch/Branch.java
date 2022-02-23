@@ -1,17 +1,14 @@
 package branch;
 
 import gfx.GUI;
-import gfx.image.Assets;
+import server.Server;
 import states.*;
 import states.dataState.DataOptionsScreen;
 import states.dataState.EditCustomer;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,21 +25,24 @@ public class Branch implements Runnable {
     public static DataState DataState;
     public static DataOptionsScreen DataOptionsScreen;
     public static EditCustomer EditCustomer;
+    public static ConnectState ConnectState;
+    public static Server Server;
 
     public Branch(String title, int width, int height) {
-        this.WIDTH = width;
-        this.HEIGHT = height;
+        WIDTH = width;
+        HEIGHT = height;
         this.title = title;
         handler = new Handler();
         GUI.init();
         DataState = new DataState(handler);
         EditCustomer = new EditCustomer(handler);
-
+        ConnectState = new ConnectState(handler);
         handler.switchToState(DataState);
+        Server = new Server();
     }
 
 
-    public void init() throws IOException {
+    public void init() {
         display = new Display(title, WIDTH, HEIGHT);
         display.getFrame().addKeyListener(handler.getKM());
         display.getFrame().addMouseListener(handler.getMM());
@@ -84,11 +84,7 @@ public class Branch implements Runnable {
 
     @Override
     public void run() {
-        try {
-            init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        init();
 
         double timePerTick;
         double delta = 0;
@@ -111,7 +107,7 @@ public class Branch implements Runnable {
             }
             if (timer >= 1000000000) {
                 if (ticks != FPS) {
-                    System.out.println("FPS: " + ticks);
+                    //System.out.println("FPS: " + ticks);
                 }
                 ticks = 0;
                 timer = 0;

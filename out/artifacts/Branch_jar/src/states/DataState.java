@@ -5,19 +5,24 @@ import branch.Display;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
+import server.Client;
+import server.Server;
 import states.dataState.Background;
 import states.dataState.Customer;
+import states.dataState.CustomerUpdated;
+import states.dataState.EditCustomer;
 
-import javax.naming.Name;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class DataState extends States implements Serializable {
 
     private Background background;
+    private double versionNumber = 3.0;
+
+    public static Server Server;
 
     private ArrayList<UIObject> guiStuff = new ArrayList<>();
     private ArrayList<UIObject> activeSearch = new ArrayList<>();
@@ -36,30 +41,24 @@ public class DataState extends States implements Serializable {
     UIObject customer10 = new UIObject("10", 10, Branch.HEIGHT / 4 + GUI.font100.getSize() + GUI.font50.getSize() * 10 + 10, false, Color.white, Color.ORANGE, GUI.font35, activeSearch);
     UIObject currentInput = new UIObject("", Branch.WIDTH / 2, Branch.HEIGHT / 4 + GUI.font100.getSize(), true, Color.white, Color.white, GUI.font50, guiStuff);
     UIObject credits = new UIObject("CREATED BY: SEAN", Branch.WIDTH - 5, Branch.HEIGHT - GUI.font35.getSize(), false, true, Color.WHITE, Color.WHITE, GUI.font35, guiStuff);
-    UIObject version = new UIObject("Version V2.4", 5, Branch.HEIGHT - 5- GUI.font35.getSize(), false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
-    UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20- GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
+    UIObject version = new UIObject("Version V" + versionNumber, 5, Branch.HEIGHT - 5 - GUI.font35.getSize(), false, Color.lightGray, Color.lightGray, GUI.font35, guiStuff);
+    UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20 - GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
+    UIObject serverDetails = new UIObject("Connect To Server", 0, GUI.font.getSize(), false, Color.white, Color.ORANGE, GUI.font, guiStuff);
 
-    public static ArrayList<Customer> Customers = new ArrayList<>();
-    public static Customer CurrentCustomer = new Customer("DUMMY");
+    public static ArrayList<Customer> OldCustomers = new ArrayList<>();
+    public static ArrayList<CustomerUpdated> Customers = new ArrayList<>();
+    public static CustomerUpdated CurrentCustomer = new CustomerUpdated("DUMMY");
     private String input = "";
     boolean lookupMode = false;
     boolean showComplete = true;
+    public static Client client = new Client();
 
     public DataState(Handler handler) {
         super(handler);
         gui = new GUI(handler);
         background = new Background(handler);
-        FileInputStream fis = null;
-        ObjectInputStream in = null;
-        try {
-            fis = new FileInputStream("MyData.ser");
-            in = new ObjectInputStream(fis);
-            Customers = (ArrayList) in.readObject();
-            in.close();
-            fis.close();
-        } catch (Exception ex) {
-            System.out.println("No Customers Found");
-        }
+        Server = new Server();
+        UpdateFromData();
 
 
         for (UIObject u : guiStuff) {
@@ -75,21 +74,83 @@ public class DataState extends States implements Serializable {
         currentInput.setAllColors(Color.WHITE);
     }
 
+    public static void UpdateFromData() {
+        FileInputStream fis = null;
+        ObjectInputStream in = null;
+        try {
+            fis = new FileInputStream("MyData.ser");
+            in = new ObjectInputStream(fis);
+            NameMatches.clear();
+            Offset = 0;
+            OldCustomers.clear();
+            OldCustomers = (ArrayList) in.readObject();
+            updateCustomers();
+            in.close();
+            fis.close();
+            renameFile();
+            SaveArray();
+        } catch (Exception ex) {
+            //System.out.println("MyData.ser not found. Trying CustomerData");
+            try {
+                fis = new FileInputStream("CustomerData.ser");
+                in = new ObjectInputStream(fis);
+                NameMatches.clear();
+                Offset = 0;
+                Customers.clear();
+                Customers = (ArrayList) in.readObject();
+                in.close();
+                fis.close();
+            } catch (Exception exc) {
+                //System.out.println("CustomerData.ser not found.");
+            }
+        }
+    }
+
+    private static void renameFile() throws IOException {
+        File file = new File("MyData.ser");
+
+        File file2 = new File("OldData.ser");
+
+        if (file2.exists())
+            throw new java.io.IOException("file exists");
+
+        boolean success = file.renameTo(file2);
+
+        if (!success) {
+            System.out.println("File was not successfully renamed");
+        }
+    }
+
+
+    private static void updateCustomers() {
+        for (Customer old : OldCustomers) {
+            CustomerUpdated temp = new CustomerUpdated("TEMP");
+            temp.setPhone(old.getPhone());
+            temp.setEmail(old.getEmail());
+            temp.setAddress(old.getAddress());
+            temp.setName(old.getName());
+            EditCustomer.changeData(temp, old);
+            temp.completed = old.completed;
+            Customers.add(temp);
+        }
+    }
+
+
+    static ArrayList<CustomerUpdated> tempCust = new ArrayList<>();
+
     public static void SaveArray() {
+        tempCust = Customers;
         try {
             // Serialize data object to a file
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("MyData.ser"));
-            out.writeObject(Customers);
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("CustomerData.ser"));
+            out.writeObject(tempCust);
             out.close();
 
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             out = new ObjectOutputStream(bos);
-            out.writeObject(Customers);
+            out.writeObject(tempCust);
             out.close();
-
-            // Get the bytes of the serialized object
-            byte[] buf = bos.toByteArray();
         } catch (IOException e) {
         }
     }
@@ -98,6 +159,27 @@ public class DataState extends States implements Serializable {
     public void tick() {
         gui.tick();
         background.tick();
+        setServerDetails();
+        if (handler.getKM().keyJustPressed(KeyEvent.VK_BACK_QUOTE)) {
+            Display.minimize();
+        }
+        if (CurrentCustomer.toBeDeleted) {
+            if (ConnectState.connectIP.equals("")) {
+                Customers.remove(CurrentCustomer);
+                NameMatches.remove(CurrentCustomer);
+            }
+        }
+        ArrayList<CustomerUpdated> customerDelete = new ArrayList<>();
+        for (CustomerUpdated c : Customers) {
+            if (c.toBeDeleted) {
+                customerDelete.add(c);
+            }
+        }
+        for (CustomerUpdated c : customerDelete) {
+            Customers.remove(c);
+            NameMatches.remove(c);
+        }
+        customerDelete.clear();
         if (enterOptions.wasClicked()) {
             handler.switchToState(Branch.DataOptionsScreen);
         }
@@ -111,6 +193,10 @@ public class DataState extends States implements Serializable {
             lookUp.active = false;
         }
         if (lookUp.wasClicked()) {
+            if (!ConnectState.connectIP.equals("")) {
+                client.downloadFile();
+            }
+            UpdateFromData();
             lookupMode = true;
             enterNew.active = false;
             lookUp.setText("SEARCH BY NAME OR PHONE");
@@ -123,9 +209,26 @@ public class DataState extends States implements Serializable {
         getKeyInput();
     }
 
-    public static ArrayList<Customer> NameMatches = new ArrayList<>();
+    public static ArrayList<CustomerUpdated> NameMatches = new ArrayList<>();
 
-    int offset = 0;
+    static int Offset = 0;
+
+    private void setServerDetails() {
+        if (Server.runServer) {
+            serverDetails.setText("SERVER RUNNING AT " + Server.getIPAddress());
+            serverDetails.setAllColors(Color.WHITE);
+            return;
+        }
+        if (!Server.runServer && !ConnectState.connectIP.equals("")) {
+            serverDetails.setText("CLIENT CONNECT AT " + ConnectState.connectIP);
+            serverDetails.setAllColors(Color.WHITE);
+            return;
+        }
+        if (serverDetails.wasClicked()) {
+            serverDetails.clicked = false;
+            handler.switchToState(Branch.ConnectState);
+        }
+    }
 
     private void getKeyInput() {
         if (KeyManager.LockInput) {
@@ -147,26 +250,28 @@ public class DataState extends States implements Serializable {
         }
         int i = 0;
         if (handler.getKM().keyJustPressed(KeyEvent.VK_DOWN) || handler.getMM().isWheelDown()) {
-            offset += 1;
-            if (10 + offset > NameMatches.size()) {
-                offset -= 1;
+            Offset += 1;
+            if (10 + Offset > NameMatches.size()) {
+                Offset -= 1;
             }
         }
         if (handler.getKM().keyJustPressed(KeyEvent.VK_UP) || handler.getMM().isWheelUp()) {
-            offset -= 1;
-            if (offset < 0) {
-                offset = 0;
+            Offset -= 1;
+            if (Offset < 0) {
+                Offset = 0;
             }
         }
 
         {
-            for (Customer c : NameMatches) {
+            for (CustomerUpdated c : NameMatches) {
                 if (i >= 10) {
                     break;
                 }
-                activeSearch.get(i).setText(NameMatches.get(i + offset).getName() + "   " + NameMatches.get(i + offset).getPhone() + "   Date Made: " + NameMatches.get(i + offset).getDate());
-                if (NameMatches.get(i + offset).completed) {
+                activeSearch.get(i).setText(NameMatches.get(i + Offset).getName() + "   " + NameMatches.get(i + Offset).getPhone() + "   Date Made: " + NameMatches.get(i + Offset).getDate());
+                if (NameMatches.get(i + Offset).completed) {
                     activeSearch.get(i).setColor(Color.green);
+                } else if (NameMatches.get(i + Offset).inprogress) {
+                    activeSearch.get(i).setColor(Color.yellow);
                 } else {
                     activeSearch.get(i).setColor(Color.white);
                 }
@@ -177,7 +282,7 @@ public class DataState extends States implements Serializable {
             }
             for (UIObject o : activeSearch) {
                 if (o.wasClicked()) {
-                    for (Customer c : Customers) {
+                    for (CustomerUpdated c : Customers) {
                         if (o.getText().equals(c.getName() + "   " + c.getPhone() + "   Date Made: " + c.getDate())) {
                             CurrentCustomer = c;
                             reset();
@@ -203,7 +308,7 @@ public class DataState extends States implements Serializable {
                     u.active = true;
                 }
 
-                for (Customer c : Customers) {
+                for (CustomerUpdated c : Customers) {
                     String namePhoneInfo = c.getName() + c.getPhone();
                     if (namePhoneInfo.contains(input)) {
                         if (!NameMatches.contains(c)) {
@@ -216,13 +321,13 @@ public class DataState extends States implements Serializable {
                     } else {
                         if (NameMatches.contains(c)) {
                             NameMatches.remove(c);
-                            offset = 0;
+                            Offset = 0;
                         }
                     }
                     if (c.completed && !showComplete) {
                         if (NameMatches.contains(c)) {
                             NameMatches.remove(c);
-                            offset = 0;
+                            Offset = 0;
                         }
                     }
                 }
@@ -245,7 +350,7 @@ public class DataState extends States implements Serializable {
 
     @Override
     public void reset() {
-        offset = 0;
+        Offset = 0;
         enterNew.resetColors();
         lookUp.resetColors();
         enterNew.active = true;
@@ -271,7 +376,7 @@ public class DataState extends States implements Serializable {
         if (input.equals("")) {
             input = "DUMMY";
         }
-        CurrentCustomer = new Customer(input);
+        CurrentCustomer = new CustomerUpdated(input);
         Customers.add(CurrentCustomer);
         input = "";
         currentInput.setText(input);
