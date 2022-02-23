@@ -44,12 +44,18 @@ public class Client {
 
     private void mergeData() {
         downloadFile();
-        DataState.SaveArray();
+        DataState.UpdateFromData();
         CustomerUpdated customerUpdated = null;
+        CustomerUpdated cTemp = null;
         for(CustomerUpdated c : DataState.Customers){
             if(c.ID.equals(DataState.CurrentCustomer.ID)){
                 customerUpdated = DataState.CurrentCustomer;
+                cTemp = c;
             }
+        }
+        if(cTemp != null){
+            DataState.Customers.remove(cTemp);
+            DataState.Customers.add(DataState.CurrentCustomer);
         }
         if(customerUpdated == null){
             DataState.Customers.add(DataState.CurrentCustomer);
