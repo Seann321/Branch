@@ -3,6 +3,7 @@ package server;
 import branch.Main;
 import states.DataState;
 import states.dataState.Customer;
+import states.dataState.CustomerUpdated;
 import states.dataState.EditCustomer;
 
 import java.io.*;
@@ -48,11 +49,29 @@ public class Server implements Runnable {
     }
 
     private void downloadData() throws IOException {
+        CustomerUpdated currentTemp = null;
+        if (DataState.CurrentCustomer != null) {
+            currentTemp = DataState.CurrentCustomer;
+        }
         ftp.receiveFile("CustomerData.ser");
         DataState.UpdateFromData();
+        CustomerUpdated customerUpdated = null;
+
+        for (CustomerUpdated c : DataState.Customers) {
+            if (c.ID.equals(DataState.CurrentCustomer.ID)) {
+                customerUpdated = DataState.CurrentCustomer;
+                currentTemp = c;
+            }
+        }
+        if (currentTemp != null) {
+            DataState.Customers.remove(currentTemp);
+            DataState.Customers.add(DataState.CurrentCustomer);
+        }
+        if (customerUpdated == null) {
+            DataState.Customers.add(DataState.CurrentCustomer);
+        }
+        DataState.SaveArray();
     }
-
-
 
     private void init() {
         try {
