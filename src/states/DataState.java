@@ -1,6 +1,7 @@
 package states;
 
 import branch.Branch;
+import branch.Display;
 import controls.KeyManager;
 import gfx.GUI;
 import gfx.UIObject;
@@ -159,6 +160,9 @@ public class DataState extends States implements Serializable {
         gui.tick();
         background.tick();
         setServerDetails();
+        if(handler.getKM().keyJustPressed(KeyEvent.VK_BACK_QUOTE)){
+            Display.minimize();
+        }
         if(CurrentCustomer.toBeDeleted){
             if(ConnectState.connectIP.equals("")){
                 Customers.remove(CurrentCustomer);

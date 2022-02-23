@@ -61,7 +61,7 @@ class Dot {
     public void tick() {
         x += speed;
         y -= speed;
-        if (random.nextInt(20) == 1)
+        if (random.nextInt(2000) == 1)
             color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * .8));
         if (color.getAlpha() == 0) {
             active = false;
