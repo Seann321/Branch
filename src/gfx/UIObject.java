@@ -130,7 +130,6 @@ public class UIObject {
         int y = yPos;
 
         if (center) {
-
             x = xPos - fm.stringWidth(text) / 2;
             y = (yPos - fm.getHeight() / 2) + fm.getAscent();
 

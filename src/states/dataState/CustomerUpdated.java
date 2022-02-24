@@ -14,12 +14,14 @@ public class CustomerUpdated implements Serializable {
     public String date;
 
     public boolean toBeDeleted = false;
-    public boolean completed = false;
-    public boolean inprogress = false;
     public Double ID;
     public String name, email, address, phone;
+    public static String[] Status = new String[]{
+            "Taken in", "Captured", "Edited", "Billed Out", "Completed"
+    };
+    public int currentStatus = 0;
     public String[] notes = new String[]{
-            "Notes", "More Notes", "More Notes", "More Notes", "More Notes"
+            "Notes", "More Notes"
     };
     public ArrayList<MediaType> mediaTypes = new ArrayList<>();
 
@@ -55,6 +57,9 @@ public class CustomerUpdated implements Serializable {
         mediaTypes.add(new MediaType("FD"));
         mediaTypes.add(new MediaType("SD"));
         mediaTypes.add(new MediaType("HD"));
+        mediaTypes.add(new MediaType("dvd"));
+        mediaTypes.add(new MediaType("cd"));
+        mediaTypes.add(new MediaType("fd"));
     }
 
     public void setMediaAmount(int x, String type) {

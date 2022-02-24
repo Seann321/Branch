@@ -2,7 +2,6 @@ package server;
 
 import branch.Main;
 import states.DataState;
-import states.dataState.Customer;
 import states.dataState.CustomerUpdated;
 import states.dataState.EditCustomer;
 

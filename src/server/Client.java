@@ -2,7 +2,6 @@ package server;
 
 import states.ConnectState;
 import states.DataState;
-import states.dataState.Customer;
 import states.dataState.CustomerUpdated;
 
 import javax.xml.crypto.Data;

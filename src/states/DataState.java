@@ -8,7 +8,6 @@ import gfx.UIObject;
 import server.Client;
 import server.Server;
 import states.dataState.Background;
-import states.dataState.Customer;
 import states.dataState.CustomerUpdated;
 import states.dataState.EditCustomer;
 
@@ -46,7 +45,6 @@ public class DataState extends States implements Serializable {
     UIObject enterOptions = new UIObject("Options", Branch.WIDTH / 2, Branch.HEIGHT - 20 - GUI.font35.getSize(), true, Color.white, Color.ORANGE, GUI.font50, guiStuff);
     UIObject serverDetails = new UIObject("Connect To Server", 0, GUI.font.getSize(), false, Color.white, Color.ORANGE, GUI.font, guiStuff);
 
-    public static ArrayList<Customer> OldCustomers = new ArrayList<>();
     public static CopyOnWriteArrayList<CustomerUpdated> Customers = new CopyOnWriteArrayList<CustomerUpdated>();
     public static CustomerUpdated CurrentCustomer = new CustomerUpdated("DUMMY");
     private String input = "";
@@ -83,9 +81,6 @@ public class DataState extends States implements Serializable {
             in = new ObjectInputStream(fis);
             NameMatches.clear();
             Offset = 0;
-            OldCustomers.clear();
-            OldCustomers = (ArrayList) in.readObject();
-            updateCustomers();
             in.close();
             fis.close();
             renameFile();
@@ -121,21 +116,6 @@ public class DataState extends States implements Serializable {
             System.out.println("File was not successfully renamed");
         }
     }
-
-
-    private static void updateCustomers() {
-        for (Customer old : OldCustomers) {
-            CustomerUpdated temp = new CustomerUpdated("TEMP");
-            temp.setPhone(old.getPhone());
-            temp.setEmail(old.getEmail());
-            temp.setAddress(old.getAddress());
-            temp.setName(old.getName());
-            EditCustomer.changeData(temp, old);
-            temp.completed = old.completed;
-            Customers.add(temp);
-        }
-    }
-
 
     static CopyOnWriteArrayList<CustomerUpdated> tempCust = new CopyOnWriteArrayList<CustomerUpdated>();
 
@@ -268,10 +248,10 @@ public class DataState extends States implements Serializable {
                 if (i >= 10) {
                     break;
                 }
-                activeSearch.get(i).setText(NameMatches.get(i + Offset).getName() + "   " + NameMatches.get(i + Offset).getPhone() + "   Date Made: " + NameMatches.get(i + Offset).getDate());
-                if (NameMatches.get(i + Offset).completed) {
+                activeSearch.get(i).setText(NameMatches.get(i + Offset).getName() + "   " + NameMatches.get(i + Offset).getPhone() + "   Date Made: " + NameMatches.get(i + Offset).getDate() + "   (" + CustomerUpdated.Status[c.currentStatus] + ")");
+                if (NameMatches.get(i + Offset).currentStatus == 4) {
                     activeSearch.get(i).setColor(Color.green);
-                } else if (NameMatches.get(i + Offset).inprogress) {
+                } else if (NameMatches.get(i + Offset).currentStatus < 4 && NameMatches.get(i + Offset).currentStatus > 0) {
                     activeSearch.get(i).setColor(Color.yellow);
                 } else {
                     activeSearch.get(i).setColor(Color.white);
@@ -284,7 +264,7 @@ public class DataState extends States implements Serializable {
             for (UIObject o : activeSearch) {
                 if (o.wasClicked()) {
                     for (CustomerUpdated c : Customers) {
-                        if (o.getText().equals(c.getName() + "   " + c.getPhone() + "   Date Made: " + c.getDate())) {
+                        if (o.getText().equals(c.getName() + "   " + c.getPhone() + "   Date Made: " + c.getDate() + "   (" + CustomerUpdated.Status[c.currentStatus] + ")")) {
                             CurrentCustomer = c;
                             reset();
                             handler.switchToState(Branch.EditCustomer);
@@ -313,7 +293,7 @@ public class DataState extends States implements Serializable {
                     String namePhoneInfo = c.getName() + c.getPhone();
                     if (namePhoneInfo.contains(input)) {
                         if (!NameMatches.contains(c)) {
-                            if (c.completed && !showComplete) {
+                            if (c.currentStatus == 4 && !showComplete) {
 
                             } else {
                                 NameMatches.add(c);
@@ -325,7 +305,7 @@ public class DataState extends States implements Serializable {
                             Offset = 0;
                         }
                     }
-                    if (c.completed && !showComplete) {
+                    if (c.currentStatus == 4 && !showComplete) {
                         if (NameMatches.contains(c)) {
                             NameMatches.remove(c);
                             Offset = 0;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class MediaType implements Serializable {
 
-    String type;
+    String type = "DUMMY";
     int amount = 0;
 
     public MediaType(String type) {
